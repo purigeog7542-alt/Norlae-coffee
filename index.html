@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
@@ -22,103 +22,100 @@
 
     <!-- NAVBAR -->
     <header class="border-b-2 border-black bg-white sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="p-3 bg-black text-white rounded-xl">
-                    <i class="fa-solid fa-mug-hot text-2xl"></i>
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="p-2 bg-black text-white rounded-xl">
+                    <i class="fa-solid fa-mug-hot text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-xl text-black">Nor Lae Bunker Coffee</h1>
-                    <p class="text-sm text-gray-600">ฐานนอแล • ระบบขายหน้าร้าน (POS)</p>
+                    <h1 class="font-bold text-sm sm:text-base text-black">Nor Lae Coffee</h1>
+                    <p class="text-[10px] sm:text-xs text-gray-600">ฐานนอแล</p>
                 </div>
             </div>
 
             <!-- Navigation Links -->
-            <div class="flex items-center gap-2 bg-gray-100 p-1.5 rounded-2xl border-2 border-black">
-                <a href="index.html" class="px-5 py-2.5 rounded-xl font-bold bg-black text-white text-sm transition flex items-center gap-2 shadow">
-                    <i class="fa-solid fa-cash-register"></i> ระบบขาย (POS)
+            <div class="flex items-center gap-1 bg-gray-100 p-1 rounded-xl border-2 border-black text-xs">
+                <a href="index.html" class="px-3 py-1.5 rounded-lg font-bold bg-black text-white transition flex items-center gap-1 shadow">
+                    <i class="fa-solid fa-cash-register"></i> POS
                 </a>
-                <a href="dashboard.html" class="px-5 py-2.5 rounded-xl font-bold text-black hover:bg-gray-200 text-sm transition flex items-center gap-2">
-                    <i class="fa-solid fa-chart-pie"></i> แดชบอร์ด
+                <a href="dashboard.html" class="px-3 py-1.5 rounded-lg font-bold text-black hover:bg-gray-200 transition flex items-center gap-1">
+                    <i class="fa-solid fa-chart-pie"></i> สรุป
                 </a>
-                <a href="cost.html" class="px-5 py-2.5 rounded-xl font-bold text-black hover:bg-gray-200 text-sm transition flex items-center gap-2">
-                    <i class="fa-solid fa-calculator"></i> คำนวณต้นทุน
+                <a href="cost.html" class="px-3 py-1.5 rounded-lg font-bold text-black hover:bg-gray-200 transition flex items-center gap-1">
+                    <i class="fa-solid fa-calculator"></i> ต้นทุน
                 </a>
-            </div>
-
-            <div class="hidden sm:flex items-center gap-2">
-                <span class="px-4 py-2 bg-black text-white border-2 border-black rounded-full text-sm font-bold flex items-center gap-2">
-                    <span class="w-3 h-3 bg-white rounded-full animate-pulse"></span>
-                    Supabase Connected
-                </span>
             </div>
         </div>
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-8rem)]">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-4 py-4 space-y-4">
+        
+        <!-- Dual Pricing Switcher & Search (Mobile Friendly) -->
+        <div class="flex flex-col gap-3 bg-white border-2 border-black rounded-2xl p-3 shadow-md">
+            <div class="flex items-center bg-gray-100 p-1 rounded-xl border-2 border-black w-full justify-center">
+                <button onclick="setCustomerType('soldier')" id="btn-soldier" class="flex-1 py-2 rounded-lg text-white bg-black font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-shield-halved"></i> กำลังพล (สวัสดิการ)
+                </button>
+                <button onclick="setCustomerType('tourist')" id="btn-tourist" class="flex-1 py-2 rounded-lg text-black hover:bg-gray-200 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-camera"></i> นักท่องเที่ยว (ปกติ)
+                </button>
+            </div>
+
+            <div class="flex gap-2">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm"></i>
+                    <input type="text" id="search-product" onkeyup="renderProducts()" placeholder="ค้นหาเมนู..." class="w-full pl-9 pr-3 py-2 bg-gray-50 rounded-xl border-2 border-black text-xs sm:text-sm font-medium text-black focus:outline-none">
+                </div>
+                <div class="flex gap-1">
+                    <button onclick="filterCategory('all')" class="cat-btn px-3 py-2 rounded-xl font-bold bg-black text-white text-xs whitespace-nowrap">ทั้งหมด</button>
+                    <button onclick="filterCategory('hot-coffee')" class="cat-btn px-3 py-2 rounded-xl font-bold bg-gray-100 text-black border-2 border-black text-xs whitespace-nowrap">ร้อน</button>
+                    <button onclick="filterCategory('iced-coffee')" class="cat-btn px-3 py-2 rounded-xl font-bold bg-gray-100 text-black border-2 border-black text-xs whitespace-nowrap">เย็น</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Layout Grid for Products & Cart -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
             
-            <!-- Left & Center: Products Catalog -->
-            <div class="lg:col-span-2 flex flex-col bg-white border-2 border-black rounded-3xl p-6 shadow-2xl overflow-hidden">
-                <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
-                    <div class="relative w-full sm:w-80">
-                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-base"></i>
-                        <input type="text" id="search-product" onkeyup="renderProducts()" placeholder="ค้นหาเมนู..." class="w-full pl-11 pr-4 py-3 bg-gray-50 rounded-2xl border-2 border-black text-base font-medium text-black focus:outline-none focus:ring-2 focus:ring-black">
-                    </div>
-
-                    <!-- Dual Pricing Switcher -->
-                    <div class="flex items-center bg-gray-100 p-1.5 rounded-2xl border-2 border-black w-full sm:w-auto justify-center">
-                        <button onclick="setCustomerType('soldier')" id="btn-soldier" class="px-5 py-2.5 rounded-xl text-white bg-black font-bold text-sm transition flex items-center gap-2">
-                            <i class="fa-solid fa-shield-halved"></i> กำลังพล (สวัสดิการ)
-                        </button>
-                        <button onclick="setCustomerType('tourist')" id="btn-tourist" class="px-5 py-2.5 rounded-xl text-black hover:bg-gray-200 font-bold text-sm transition flex items-center gap-2">
-                            <i class="fa-solid fa-camera"></i> นักท่องเที่ยว (ราคาปกติ)
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Category Tabs -->
-                <div class="flex space-x-3 overflow-x-auto pb-2 mb-4 text-sm">
-                    <button onclick="filterCategory('all')" class="cat-btn px-6 py-3 rounded-full font-bold bg-black text-white whitespace-nowrap shadow">ทั้งหมด</button>
-                    <button onclick="filterCategory('hot-coffee')" class="cat-btn px-6 py-3 rounded-full font-bold bg-gray-100 text-black border-2 border-black hover:bg-gray-200 whitespace-nowrap">กาแฟร้อน</button>
-                    <button onclick="filterCategory('iced-coffee')" class="cat-btn px-6 py-3 rounded-full font-bold bg-gray-100 text-black border-2 border-black hover:bg-gray-200 whitespace-nowrap">กาแฟเย็น</button>
-                </div>
-
-                <!-- Products Grid -->
-                <div id="pos-products-grid" class="flex-1 overflow-y-auto pr-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Products Catalog -->
+            <div class="lg:col-span-2 flex flex-col bg-white border-2 border-black rounded-2xl p-3 sm:p-4 shadow-lg">
+                <h3 class="font-bold text-sm text-black mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-mug-saucer"></i> รายการเครื่องดื่ม
+                </h3>
+                <div id="pos-products-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                     <!-- Rendered by JS -->
                 </div>
             </div>
 
-            <!-- Right: Cart & Checkout -->
-            <div class="flex flex-col bg-white border-2 border-black rounded-3xl p-6 shadow-2xl h-[calc(100vh-8rem)]">
-                <div class="flex items-center justify-between pb-4 border-b-2 border-black">
-                    <h2 class="font-bold text-lg text-black flex items-center gap-2">
-                        <i class="fa-solid fa-cart-shopping text-black"></i> ตะกร้าสินค้า
-                    </h2>
-                    <span id="cart-item-count" class="bg-black text-white font-bold text-sm px-3 py-1 rounded-full">0 ชิ้น</span>
+            <!-- Cart Section -->
+            <div class="flex flex-col bg-white border-2 border-black rounded-2xl p-3 sm:p-4 shadow-lg">
+                <div class="flex items-center justify-between pb-2 border-b-2 border-black">
+                    <h3 class="font-bold text-sm text-black flex items-center gap-2">
+                        <i class="fa-solid fa-cart-shopping"></i> ตะกร้าสินค้า
+                    </h3>
+                    <span id="cart-item-count" class="bg-black text-white font-bold text-xs px-2.5 py-0.5 rounded-full">0 ชิ้น</span>
                 </div>
 
                 <!-- Cart List -->
-                <div id="cart-items-list" class="flex-1 overflow-y-auto py-4 space-y-3">
-                    <div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-3">
-                        <i class="fa-solid fa-basket-shopping text-5xl"></i>
-                        <p class="text-base font-medium">ยังไม่มีรายการในตะกร้า</p>
+                <div id="cart-items-list" class="flex-1 overflow-y-auto py-3 space-y-2 max-h-60 lg:max-h-[calc(100vh-25rem)]">
+                    <div class="h-32 flex flex-col items-center justify-center text-gray-400 space-y-2">
+                        <i class="fa-solid fa-basket-shopping text-3xl"></i>
+                        <p class="text-xs font-medium">ยังไม่มีรายการในตะกร้า</p>
                     </div>
                 </div>
 
                 <!-- Cart Summary & Checkout -->
-                <div class="pt-4 border-t-2 border-black space-y-3 text-sm">
-                    <div class="flex justify-between text-gray-600 text-base">
+                <div class="pt-3 border-t-2 border-black space-y-2 text-xs">
+                    <div class="flex justify-between text-gray-600">
                         <span>รวมราคาเครื่องดื่ม</span>
                         <span id="cart-subtotal" class="font-bold text-black font-mono">฿0.00</span>
                     </div>
-                    <div class="flex justify-between text-xl font-extrabold text-black pt-2 border-t border-gray-200">
+                    <div class="flex justify-between text-base font-extrabold text-black pt-1 border-t border-gray-200">
                         <span>ยอดชำระสุทธิ</span>
-                        <span id="cart-total" class="text-black text-2xl font-mono">฿0.00</span>
+                        <span id="cart-total" class="text-black text-lg font-mono">฿0.00</span>
                     </div>
-                    <button onclick="openCheckoutModal()" id="btn-checkout" disabled class="w-full mt-3 bg-black hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl text-base transition shadow-xl flex items-center justify-center gap-2">
+                    <button onclick="openCheckoutModal()" id="btn-checkout" disabled class="w-full mt-2 bg-black hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
                         <i class="fa-solid fa-money-bill-wave"></i> ชำระเงิน & คำนวณเงินทอน
                     </button>
                 </div>
@@ -129,42 +126,41 @@
 
     <!-- CHECKOUT MODAL -->
     <div id="modal-checkout" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
-        <div class="bg-white border-2 border-black rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-8 space-y-5">
-            <div class="flex justify-between items-center border-b-2 border-black pb-4">
-                <h3 class="font-bold text-xl text-black">ชำระเงิน & บันทึก Supabase</h3>
-                <button onclick="closeCheckoutModal()" class="text-black text-2xl font-bold hover:text-gray-600">&times;</button>
+        <div class="bg-white border-2 border-black rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-6 space-y-4">
+            <div class="flex justify-between items-center border-b-2 border-black pb-3">
+                <h3 class="font-bold text-lg text-black">ชำระเงิน & บันทึก</h3>
+                <button onclick="closeCheckoutModal()" class="text-black text-xl font-bold hover:text-gray-600">&times;</button>
             </div>
             
-            <div class="text-center bg-gray-50 p-5 rounded-2xl border-2 border-black">
-                <p class="text-sm font-bold text-gray-600">ยอดที่ต้องชำระสุทธิ</p>
+            <div class="text-center bg-gray-50 p-4 rounded-2xl border-2 border-black">
+                <p class="text-xs font-bold text-gray-600">ยอดที่ต้องชำระสุทธิ</p>
                 <h2 id="checkout-total-price" class="text-3xl font-black text-black font-mono mt-1">฿0.00</h2>
             </div>
 
-            <!-- Note / Customer Name Field -->
             <div>
-                <label class="block font-bold text-black text-xs mb-1">ชื่อกำลังพล / หมายเหตุ (เช่น หวานน้อย, ลงบัญชีสิ้นเดือน)</label>
-                <input type="text" id="order-note" placeholder="ระบุชื่อหรือรายละเอียด (ถ้ามี)" class="w-full p-3 bg-gray-50 border-2 border-black rounded-xl font-medium text-black text-sm focus:outline-none">
+                <label class="block font-bold text-black text-xs mb-1">ชื่อกำลังพล / หมายเหตุ (ถ้ามี)</label>
+                <input type="text" id="order-note" placeholder="เช่น หวานน้อย, ลงบัญชีสิ้นเดือน" class="w-full p-2.5 bg-gray-50 border-2 border-black rounded-xl font-medium text-black text-xs focus:outline-none">
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-2">
                 <label class="block font-bold text-black text-xs">รับเงินมา (บาท)</label>
-                <input type="number" id="cash-received" oninput="calculateChange()" placeholder="0.00" class="w-full text-right text-3xl font-mono font-bold p-3 bg-gray-50 border-2 border-black rounded-2xl text-black focus:outline-none focus:ring-2 focus:ring-black">
+                <input type="number" id="cash-received" oninput="calculateChange()" placeholder="0.00" class="w-full text-right text-2xl font-mono font-bold p-3 bg-gray-50 border-2 border-black rounded-xl text-black focus:outline-none">
                 
-                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-2xl border-2 border-black">
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-xl border-2 border-black">
                     <span class="text-xs font-bold text-gray-600">เงินทอน</span>
-                    <span id="cash-change" class="text-2xl font-mono font-black text-black">฿0.00</span>
+                    <span id="cash-change" class="text-xl font-mono font-black text-black">฿0.00</span>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3 pt-2">
-                <button onclick="closeCheckoutModal()" class="px-5 py-3 bg-gray-200 hover:bg-gray-300 text-black rounded-2xl text-sm font-bold transition">ยกเลิก</button>
-                <button onclick="completePaymentAndSave()" id="btn-confirm-pay" class="px-7 py-3 bg-black hover:bg-gray-800 text-white font-bold rounded-2xl text-sm shadow-xl flex items-center gap-2 transition">
+            <div class="flex justify-end gap-2 pt-2">
+                <button onclick="closeCheckoutModal()" class="px-4 py-2.5 bg-gray-200 hover:bg-gray-300 text-black rounded-xl text-xs font-bold transition">ยกเลิก</button>
+                <button onclick="completePaymentAndSave()" id="btn-confirm-pay" class="px-6 py-2.5 bg-black hover:bg-gray-800 text-white font-bold rounded-xl text-xs shadow-xl flex items-center gap-2 transition">
                     <i class="fa-solid fa-check"></i> ยืนยัน & บันทึก
                 </button>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=3"></script>
 </body>
 </html>
