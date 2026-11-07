@@ -35,11 +35,11 @@ function setCustomerType(type) {
     if (!btnSoldier || !btnTourist) return;
 
     if (type === 'soldier') {
-        btnSoldier.className = "px-5 py-2.5 rounded-xl text-white bg-black font-bold text-sm transition flex items-center gap-2";
-        btnTourist.className = "px-5 py-2.5 rounded-xl text-black hover:bg-gray-200 font-bold text-sm transition flex items-center gap-2";
+        btnSoldier.className = "flex-1 py-2 rounded-lg text-white bg-black font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5";
+        btnTourist.className = "flex-1 py-2 rounded-lg text-black hover:bg-gray-200 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5";
     } else {
-        btnTourist.className = "px-5 py-2.5 rounded-xl text-white bg-black font-bold text-sm transition flex items-center gap-2";
-        btnSoldier.className = "px-5 py-2.5 rounded-xl text-black hover:bg-gray-200 font-bold text-sm transition flex items-center gap-2";
+        btnTourist.className = "flex-1 py-2 rounded-lg text-white bg-black font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5";
+        btnSoldier.className = "flex-1 py-2 rounded-lg text-black hover:bg-gray-200 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5";
     }
     renderProducts();
 }
@@ -47,10 +47,10 @@ function setCustomerType(type) {
 function filterCategory(cat) {
     currentCategory = cat;
     document.querySelectorAll('.cat-btn').forEach(btn => {
-        btn.className = "cat-btn px-6 py-3 rounded-full font-bold bg-gray-100 text-black border-2 border-black hover:bg-gray-200 whitespace-nowrap";
+        btn.className = "cat-btn px-3 py-2 rounded-xl font-bold bg-gray-100 text-black border-2 border-black text-xs whitespace-nowrap";
     });
     if (event && event.currentTarget) {
-        event.currentTarget.className = "cat-btn px-6 py-3 rounded-full font-bold bg-black text-white whitespace-nowrap shadow";
+        event.currentTarget.className = "cat-btn px-3 py-2 rounded-xl font-bold bg-black text-white text-xs whitespace-nowrap shadow";
     }
     renderProducts();
 }
@@ -72,16 +72,16 @@ function renderProducts() {
         const price = customerType === 'soldier' ? p.priceSoldier : p.priceTourist;
         const profit = price - p.cogs;
         return `
-            <div onclick="addToCart(${p.id})" class="bg-gray-50 border-2 border-black rounded-3xl p-5 flex flex-col justify-between hover:bg-gray-100 transition cursor-pointer select-none shadow">
-                <div class="bg-white border-2 border-black rounded-2xl h-28 flex items-center justify-center text-5xl mb-4 relative shadow-sm">
+            <div onclick="addToCart(${p.id})" class="bg-gray-50 border-2 border-black rounded-2xl p-3 flex flex-col justify-between hover:bg-gray-100 transition cursor-pointer select-none shadow-sm">
+                <div class="bg-white border-2 border-black rounded-xl h-20 flex items-center justify-center text-4xl mb-2 relative">
                     ${p.icon}
-                    <span class="absolute top-2 right-2 text-xs font-bold bg-black text-white px-2.5 py-1 rounded-full font-mono">ทุน ฿${p.cogs}</span>
+                    <span class="absolute top-1.5 right-1.5 text-[10px] font-bold bg-black text-white px-2 py-0.5 rounded-full font-mono">ทุน ฿${p.cogs}</span>
                 </div>
                 <div>
-                    <h4 class="font-extrabold text-base text-black">${p.name}</h4>
-                    <div class="flex items-center justify-between mt-3 pt-2 border-t border-gray-300">
-                        <span class="text-black font-black text-xl font-mono">฿${price}</span>
-                        <span class="text-xs font-bold text-gray-700 bg-gray-200 px-2 py-1 rounded-lg">กำไร +฿${profit.toFixed(1)}</span>
+                    <h4 class="font-extrabold text-xs sm:text-sm text-black">${p.name}</h4>
+                    <div class="flex items-center justify-between mt-2 pt-1.5 border-t border-gray-200">
+                        <span class="text-black font-black text-base font-mono">฿${price}</span>
+                        <span class="text-[10px] font-bold text-gray-700 bg-gray-200 px-1.5 py-0.5 rounded-md">กำไร +฿${profit.toFixed(1)}</span>
                     </div>
                 </div>
             </div>
@@ -134,9 +134,9 @@ function updateCartUI() {
 
     if (cart.length === 0) {
         list.innerHTML = `
-            <div class="h-full flex flex-col items-center justify-center text-gray-400 space-y-3">
-                <i class="fa-solid fa-basket-shopping text-5xl"></i>
-                <p class="text-base font-medium">ยังไม่มีรายการในตะกร้า</p>
+            <div class="h-32 flex flex-col items-center justify-center text-gray-400 space-y-2">
+                <i class="fa-solid fa-basket-shopping text-3xl"></i>
+                <p class="text-xs font-medium">ยังไม่มีรายการในตะกร้า</p>
             </div>
         `;
         if (countTag) countTag.innerText = '0 ชิ้น';
@@ -154,19 +154,19 @@ function updateCartUI() {
         subtotal += itemTotal;
         totalItems += item.qty;
         return `
-            <div class="flex items-center justify-between bg-gray-50 p-3.5 rounded-2xl border-2 border-black text-sm shadow-sm">
+            <div class="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border-2 border-black text-xs shadow-sm">
                 <div class="flex-1 pr-2">
-                    <h5 class="font-bold text-black text-base">${item.name}</h5>
-                    <p class="font-mono text-black font-bold mt-1 text-sm">฿${itemTotal} (${item.price} x ${item.qty})</p>
+                    <h5 class="font-bold text-black text-sm">${item.name}</h5>
+                    <p class="font-mono text-black font-bold mt-0.5">฿${itemTotal} (${item.price} x ${item.qty})</p>
                 </div>
-                <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-1 bg-white border-2 border-black rounded-xl p-1 shadow-sm">
-                        <button onclick="updateQty(${idx}, -1)" class="w-6 h-6 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded-lg text-black font-black transition">-</button>
-                        <span class="w-6 text-center font-black text-sm">${item.qty}</span>
-                        <button onclick="updateQty(${idx}, 1)" class="w-6 h-6 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded-lg text-black font-black transition">+</button>
+                <div class="flex items-center gap-1.5">
+                    <div class="flex items-center gap-1 bg-white border-2 border-black rounded-lg p-1">
+                        <button onclick="updateQty(${idx}, -1)" class="w-5 h-5 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded text-black font-black">-</button>
+                        <span class="w-5 text-center font-black text-xs">${item.qty}</span>
+                        <button onclick="updateQty(${idx}, 1)" class="w-5 h-5 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded text-black font-black">+</button>
                     </div>
-                    <button onclick="removeFromCart(${idx})" class="w-8 h-8 flex items-center justify-center bg-red-100 hover:bg-red-600 hover:text-white text-red-600 border-2 border-black rounded-xl font-bold transition" title="ลบรายการ">
-                        <i class="fa-solid fa-trash-can"></i>
+                    <button onclick="removeFromCart(${idx})" class="w-7 h-7 flex items-center justify-center bg-red-100 hover:bg-red-600 hover:text-white text-red-600 border-2 border-black rounded-lg font-bold" title="ลบ">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
                     </button>
                 </div>
             </div>
@@ -249,7 +249,7 @@ async function completePaymentAndSave() {
 
 async function deductInventory(itemName, amount) {
     try {
-        const { data, error } = await supabaseClient
+        const { data } = await supabaseClient
             .from('inventory')
             .select('*')
             .eq('item_name', itemName)
@@ -272,7 +272,7 @@ async function loadSalesHistory() {
     const filterDate = document.getElementById('filter-date') ? document.getElementById('filter-date').value : '';
     if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 font-medium text-base">กำลังดึงข้อมูลจาก Supabase...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">กำลังดึงข้อมูลจาก Supabase...</td></tr>`;
 
     try {
         let query = supabaseClient
@@ -284,7 +284,7 @@ async function loadSalesHistory() {
         if (error) throw error;
 
         if (!data || data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 font-medium text-base">ยังไม่มีประวัติการขาย</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">ยังไม่มีประวัติการขาย</td></tr>`;
             document.getElementById('stats-total-revenue').innerText = '฿0.00';
             document.getElementById('stats-soldier-cups').innerText = '0 แก้ว';
             document.getElementById('stats-tourist-cups').innerText = '0 แก้ว';
@@ -315,12 +315,12 @@ async function loadSalesHistory() {
             });
             return `
                 <tr class="hover:bg-gray-50 transition">
-                    <td class="px-6 py-4 font-medium text-gray-600">${formattedDate}</td>
-                    <td class="px-6 py-4"><span class="px-3 py-1 bg-black text-white font-bold rounded-xl text-xs">${row.customer_type}</span></td>
-                    <td class="px-6 py-4 font-bold text-black text-base">${row.product_name}</td>
-                    <td class="px-6 py-4 text-gray-700 font-medium">${row.note || '-'}</td>
-                    <td class="px-6 py-4 text-right font-mono font-bold">${row.quantity}</td>
-                    <td class="px-6 py-4 text-right font-mono font-black text-lg">฿${row.total_price}</td>
+                    <td class="px-3 py-3 font-medium text-gray-600">${formattedDate}</td>
+                    <td class="px-3 py-3"><span class="px-2 py-1 bg-black text-white font-bold rounded-lg text-[10px]">${row.customer_type}</span></td>
+                    <td class="px-3 py-3 font-bold text-black">${row.product_name}</td>
+                    <td class="px-3 py-3 text-gray-700">${row.note || '-'}</td>
+                    <td class="px-3 py-3 text-right font-mono font-bold">${row.quantity}</td>
+                    <td class="px-3 py-3 text-right font-mono font-black">฿${row.total_price}</td>
                 </tr>
             `;
         }).join('');
@@ -332,7 +332,7 @@ async function loadSalesHistory() {
 
     } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-red-600 font-bold">ไม่สามารถโหลดข้อมูลได้: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-600 font-bold">ไม่สามารถโหลดข้อมูลได้: ${err.message}</td></tr>`;
     }
 }
 
@@ -351,15 +351,20 @@ function calculateCosts() {
     const hotCogs = (beanPerGram * 18) + hotCup + hotLid;
     const icedCogs = (beanPerGram * 20) + icedCup + icedLid + straw + icePerCup;
 
-    document.getElementById('result-hot-cogs').innerText = `฿${hotCogs.toFixed(2)}`;
-    document.getElementById('result-iced-cogs').innerText = `฿${icedCogs.toFixed(2)}`;
+    const hotCogsEl = document.getElementById('result-hot-cogs');
+    const icedCogsEl = document.getElementById('result-iced-cogs');
+    const avgProfitEl = document.getElementById('result-avg-profit');
+    const breakEvenCupsEl = document.getElementById('result-break-even-cups');
+
+    if (hotCogsEl) hotCogsEl.innerText = `฿${hotCogs.toFixed(2)}`;
+    if (icedCogsEl) icedCogsEl.innerText = `฿${icedCogs.toFixed(2)}`;
 
     const avgPrice = (30 + 37.5) / 2;
     const avgCogs = (hotCogs + icedCogs) / 2;
     const avgProfit = avgPrice - avgCogs;
 
-    document.getElementById('result-avg-profit').innerText = `฿${avgProfit.toFixed(2)} / แก้ว`;
+    if (avgProfitEl) avgProfitEl.innerText = `฿${avgProfit.toFixed(2)} / แก้ว`;
 
     const breakEvenCups = avgProfit > 0 ? Math.ceil(totalCapex / avgProfit) : 0;
-    document.getElementById('result-break-even-cups').innerText = `${breakEvenCups.toLocaleString()} แก้ว`;
+    if (breakEvenCupsEl) breakEvenCupsEl.innerText = `${breakEvenCups.toLocaleString()} แก้ว`;
 }
