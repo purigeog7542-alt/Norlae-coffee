@@ -57,17 +57,35 @@
 
     <!-- MAIN CONTAINER -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Filter & Stats Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
+            <div>
+                <h2 class="text-xl font-bold text-black">สรุปภาพรวมยอดขาย</h2>
+                <p class="text-xs text-gray-600">กรองดูยอดขายย้อนหลังตามช่วงเวลาได้ทันที</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <input type="date" id="filter-date" onchange="loadSalesHistory()" class="p-2.5 bg-gray-50 border-2 border-black rounded-xl text-sm font-bold">
+                <button onclick="loadSalesHistory()" class="px-4 py-2.5 bg-black text-white rounded-xl text-sm font-bold hover:bg-gray-800 transition">รีเฟรชข้อมูล</button>
+            </div>
+        </div>
+
+        <!-- KPI Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div class="bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
                 <span class="text-sm font-bold text-gray-600">ยอดขายรวมทั้งหมด</span>
                 <div id="stats-total-revenue" class="text-3xl font-black text-black mt-2 font-mono">฿0.00</div>
             </div>
             <div class="bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
-                <span class="text-sm font-bold text-gray-600">จำนวนแก้วที่ขายได้</span>
-                <div id="stats-total-cups" class="text-3xl font-black text-black mt-2 font-mono">0 แก้ว</div>
+                <span class="text-sm font-bold text-gray-600">กำลังพล (สวัสดิการ)</span>
+                <div id="stats-soldier-cups" class="text-3xl font-black text-black mt-2 font-mono">0 แก้ว</div>
             </div>
             <div class="bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
-                <span class="text-sm font-bold text-gray-600">จำนวนออเดอร์ทั้งหมด</span>
+                <span class="text-sm font-bold text-gray-600">นักท่องเที่ยว (ปกติ)</span>
+                <div id="stats-tourist-cups" class="text-3xl font-black text-black mt-2 font-mono">0 แก้ว</div>
+            </div>
+            <div class="bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
+                <span class="text-sm font-bold text-gray-600">ออเดอร์ทั้งหมด</span>
                 <div id="stats-total-orders" class="text-3xl font-black text-black mt-2 font-mono">0 รายการ</div>
             </div>
         </div>
@@ -75,10 +93,7 @@
         <!-- Sales History Table -->
         <div class="bg-white border-2 border-black rounded-3xl p-8 shadow-2xl">
             <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-black">ประวัติการขายล่าสุด (จาก Supabase)</h2>
-                <button onclick="loadSalesHistory()" class="px-5 py-2.5 bg-gray-100 hover:bg-gray-200 text-black border-2 border-black font-bold rounded-2xl text-sm flex items-center gap-2 transition shadow">
-                    <i class="fa-solid fa-rotate"></i> โหลดข้อมูลใหม่
-                </button>
+                <h2 class="text-xl font-bold text-black">ประวัติการขายล่าสุด & หมายเหตุ</h2>
             </div>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-black">
@@ -87,13 +102,14 @@
                             <th class="px-6 py-4 rounded-l-2xl">เวลา</th>
                             <th class="px-6 py-4">ประเภทลูกค้า</th>
                             <th class="px-6 py-4">รายการสินค้า</th>
+                            <th class="px-6 py-4">หมายเหตุ / ชื่อ</th>
                             <th class="px-6 py-4 text-right">จำนวน</th>
                             <th class="px-6 py-4 text-right rounded-r-2xl">ยอดรวม (บาท)</th>
                         </tr>
                     </thead>
                     <tbody id="sales-history-body" class="divide-y-2 divide-gray-100">
                         <tr>
-                            <td colspan="5" class="text-center py-8 text-gray-500 font-medium text-base">กำลังโหลดข้อมูล...</td>
+                            <td colspan="6" class="text-center py-8 text-gray-500 font-medium text-base">กำลังโหลดข้อมูล...</td>
                         </tr>
                     </tbody>
                 </table>
