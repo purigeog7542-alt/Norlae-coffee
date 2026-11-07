@@ -14,7 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
@@ -22,94 +22,84 @@
 
     <!-- NAVBAR -->
     <header class="border-b-2 border-black bg-white sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="p-3 bg-black text-white rounded-xl">
-                    <i class="fa-solid fa-mug-hot text-2xl"></i>
+        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="p-2 bg-black text-white rounded-xl">
+                    <i class="fa-solid fa-mug-hot text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-xl text-black">Nor Lae Bunker Coffee</h1>
-                    <p class="text-sm text-gray-600">บก.ควบคุมผาดำ • แดชบอร์ด & รายงาน</p>
+                    <h1 class="font-bold text-sm sm:text-base text-black">Nor Lae Coffee</h1>
+                    <p class="text-[10px] sm:text-xs text-gray-600">ฐานนอแล</p>
                 </div>
             </div>
 
             <!-- Navigation Links -->
-            <div class="flex items-center gap-2 bg-gray-100 p-1.5 rounded-2xl border-2 border-black">
-                <a href="index.html" class="px-5 py-2.5 rounded-xl font-bold text-black hover:bg-gray-200 text-sm transition flex items-center gap-2">
-                    <i class="fa-solid fa-cash-register"></i> ระบบขาย (POS)
+            <div class="flex items-center gap-1 bg-gray-100 p-1 rounded-xl border-2 border-black text-xs">
+                <a href="index.html" class="px-3 py-1.5 rounded-lg font-bold text-black hover:bg-gray-200 transition flex items-center gap-1">
+                    <i class="fa-solid fa-cash-register"></i> POS
                 </a>
-                <a href="dashboard.html" class="px-5 py-2.5 rounded-xl font-bold bg-black text-white text-sm transition flex items-center gap-2 shadow">
-                    <i class="fa-solid fa-chart-pie"></i> แดชบอร์ด
+                <a href="dashboard.html" class="px-3 py-1.5 rounded-lg font-bold bg-black text-white transition flex items-center gap-1 shadow">
+                    <i class="fa-solid fa-chart-pie"></i> สรุป
                 </a>
-                <a href="cost.html" class="px-5 py-2.5 rounded-xl font-bold text-black hover:bg-gray-200 text-sm transition flex items-center gap-2">
-                    <i class="fa-solid fa-calculator"></i> คำนวณต้นทุน
+                <a href="cost.html" class="px-3 py-1.5 rounded-lg font-bold text-black hover:bg-gray-200 transition flex items-center gap-1">
+                    <i class="fa-solid fa-calculator"></i> ต้นทุน
                 </a>
-            </div>
-
-            <div class="hidden sm:flex items-center gap-2">
-                <span class="px-4 py-2 bg-black text-white border-2 border-black rounded-full text-sm font-bold flex items-center gap-2">
-                    <span class="w-3 h-3 bg-white rounded-full animate-pulse"></span>
-                    Supabase Connected
-                </span>
             </div>
         </div>
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-8 space-y-6">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-4 py-6 space-y-4">
         
-        <!-- Filter & Stats Header -->
-        <div class="flex flex-col md:flex-row justify-between items-center gap-4 bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
+        <!-- Filter Header -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-white border-2 border-black rounded-2xl p-4 shadow-md">
             <div>
-                <h2 class="text-xl font-bold text-black">สรุปภาพรวมยอดขาย</h2>
-                <p class="text-xs text-gray-600">กรองดูยอดขายย้อนหลังตามช่วงเวลาได้ทันที</p>
+                <h2 class="text-base sm:text-lg font-bold text-black">สรุปภาพรวมยอดขาย</h2>
             </div>
-            <div class="flex items-center gap-3">
-                <input type="date" id="filter-date" onchange="loadSalesHistory()" class="p-2.5 bg-gray-50 border-2 border-black rounded-xl text-sm font-bold">
-                <button onclick="loadSalesHistory()" class="px-4 py-2.5 bg-black text-white rounded-xl text-sm font-bold hover:bg-gray-800 transition">รีเฟรชข้อมูล</button>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                <input type="date" id="filter-date" onchange="loadSalesHistory()" class="p-2 bg-gray-50 border-2 border-black rounded-xl text-xs sm:text-sm font-bold flex-1">
+                <button onclick="loadSalesHistory()" class="px-3 py-2 bg-black text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-gray-800 transition">รีเฟรช</button>
             </div>
         </div>
 
         <!-- KPI Cards Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div class="bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
-                <span class="text-sm font-bold text-gray-600">ยอดขายรวมทั้งหมด</span>
-                <div id="stats-total-revenue" class="text-3xl font-black text-black mt-2 font-mono">฿0.00</div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-md">
+                <span class="text-xs font-bold text-gray-600">ยอดขายรวม</span>
+                <div id="stats-total-revenue" class="text-lg sm:text-2xl font-black text-black mt-1 font-mono">฿0.00</div>
             </div>
-            <div class="bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
-                <span class="text-sm font-bold text-gray-600">กำลังพล (สวัสดิการ)</span>
-                <div id="stats-soldier-cups" class="text-3xl font-black text-black mt-2 font-mono">0 แก้ว</div>
+            <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-md">
+                <span class="text-xs font-bold text-gray-600">กำลังพล (แก้ว)</span>
+                <div id="stats-soldier-cups" class="text-lg sm:text-2xl font-black text-black mt-1 font-mono">0 แก้ว</div>
             </div>
-            <div class="bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
-                <span class="text-sm font-bold text-gray-600">นักท่องเที่ยว (ปกติ)</span>
-                <div id="stats-tourist-cups" class="text-3xl font-black text-black mt-2 font-mono">0 แก้ว</div>
+            <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-md">
+                <span class="text-xs font-bold text-gray-600">นักท่องเที่ยว (แก้ว)</span>
+                <div id="stats-tourist-cups" class="text-lg sm:text-2xl font-black text-black mt-1 font-mono">0 แก้ว</div>
             </div>
-            <div class="bg-white border-2 border-black rounded-3xl p-6 shadow-xl">
-                <span class="text-sm font-bold text-gray-600">ออเดอร์ทั้งหมด</span>
-                <div id="stats-total-orders" class="text-3xl font-black text-black mt-2 font-mono">0 รายการ</div>
+            <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-md">
+                <span class="text-xs font-bold text-gray-600">ออเดอร์ทั้งหมด</span>
+                <div id="stats-total-orders" class="text-lg sm:text-2xl font-black text-black mt-1 font-mono">0 รายการ</div>
             </div>
         </div>
 
         <!-- Sales History Table -->
-        <div class="bg-white border-2 border-black rounded-3xl p-8 shadow-2xl">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-black">ประวัติการขายล่าสุด & หมายเหตุ</h2>
-            </div>
+        <div class="bg-white border-2 border-black rounded-2xl p-4 sm:p-6 shadow-lg">
+            <h2 class="text-base sm:text-lg font-bold text-black mb-4">ประวัติการขายล่าสุด</h2>
             <div class="overflow-x-auto">
-                <table class="w-full text-sm text-left text-black">
-                    <thead class="bg-black text-white uppercase text-xs">
+                <table class="w-full text-xs sm:text-sm text-left text-black">
+                    <thead class="bg-black text-white uppercase text-[10px] sm:text-xs">
                         <tr>
-                            <th class="px-6 py-4 rounded-l-2xl">เวลา</th>
-                            <th class="px-6 py-4">ประเภทลูกค้า</th>
-                            <th class="px-6 py-4">รายการสินค้า</th>
-                            <th class="px-6 py-4">หมายเหตุ / ชื่อ</th>
-                            <th class="px-6 py-4 text-right">จำนวน</th>
-                            <th class="px-6 py-4 text-right rounded-r-2xl">ยอดรวม (บาท)</th>
+                            <th class="px-3 py-2.5 rounded-l-xl">เวลา</th>
+                            <th class="px-3 py-2.5">ประเภท</th>
+                            <th class="px-3 py-2.5">รายการ</th>
+                            <th class="px-3 py-2.5">หมายเหตุ</th>
+                            <th class="px-3 py-2.5 text-right">จำนวน</th>
+                            <th class="px-3 py-2.5 text-right rounded-r-xl">ยอดรวม</th>
                         </tr>
                     </thead>
-                    <tbody id="sales-history-body" class="divide-y-2 divide-gray-100">
+                    <tbody id="sales-history-body" class="divide-y divide-gray-200">
                         <tr>
-                            <td colspan="6" class="text-center py-8 text-gray-500 font-medium text-base">กำลังโหลดข้อมูล...</td>
+                            <td colspan="6" class="text-center py-6 text-gray-500 font-medium">กำลังโหลดข้อมูล...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -117,7 +107,6 @@
         </div>
     </main>
 
-  <script src="script.js?v=2"></script>
-
+    <script src="script.js?v=3"></script>
 </body>
 </html>
