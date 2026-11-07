@@ -337,14 +337,14 @@ async function loadSalesHistory() {
 
 // --- COST & BREAK-EVEN CALCULATOR ---
 function calculateCosts() {
-    const beanPerGram = parseFloat(document.getElementById('cost-bean-per-gram').value) || 0;
-    const hotCup = parseFloat(document.getElementById('cost-hot-cup').value) || 0;
-    const hotLid = parseFloat(document.getElementById('cost-hot-lid').value) || 0;
-    const icedCup = parseFloat(document.getElementById('cost-iced-cup').value) || 0;
-    const icedLid = parseFloat(document.getElementById('cost-iced-lid').value) || 0;
-    const straw = parseFloat(document.getElementById('cost-straw').value) || 0;
-    const iceBag = parseFloat(document.getElementById('cost-ice-bag').value) || 0;
-    const totalCapex = parseFloat(document.getElementById('total-capex').value) || 0;
+    const beanPerGram = parseFloat(document.getElementById('cost-bean-per-gram')?.value) || 0;
+    const hotCup = parseFloat(document.getElementById('cost-hot-cup')?.value) || 0;
+    const hotLid = parseFloat(document.getElementById('cost-hot-lid')?.value) || 0;
+    const icedCup = parseFloat(document.getElementById('cost-iced-cup')?.value) || 0;
+    const icedLid = parseFloat(document.getElementById('cost-iced-lid')?.value) || 0;
+    const straw = parseFloat(document.getElementById('cost-straw')?.value) || 0;
+    const iceBag = parseFloat(document.getElementById('cost-ice-bag')?.value) || 0;
+    const totalCapex = parseFloat(document.getElementById('total-capex')?.value) || 0;
 
     const icePerCup = iceBag / 35;
     const hotCogs = (beanPerGram * 18) + hotCup + hotLid;
@@ -358,7 +358,7 @@ function calculateCosts() {
     if (hotCogsEl) hotCogsEl.innerText = `฿${hotCogs.toFixed(2)}`;
     if (icedCogsEl) icedCogsEl.innerText = `฿${icedCogs.toFixed(2)}`;
 
-    const avgPrice = (30 + 37.5) / 2;
+    const avgPrice = (30 + 37.5) / 2; // ราคาเฉลี่ยระหว่างกำลังพลและนักท่องเที่ยว
     const avgCogs = (hotCogs + icedCogs) / 2;
     const avgProfit = avgPrice - avgCogs;
 
