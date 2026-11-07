@@ -119,7 +119,7 @@
                         <span id="cart-total" class="text-black text-2xl font-mono">฿0.00</span>
                     </div>
                     <button onclick="openCheckoutModal()" id="btn-checkout" disabled class="w-full mt-3 bg-black hover:bg-gray-800 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold py-4 rounded-2xl text-base transition shadow-xl flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-money-bill-wave"></i> ชำระเงิน
+                        <i class="fa-solid fa-money-bill-wave"></i> ชำระเงิน & คำนวณเงินทอน
                     </button>
                 </div>
             </div>
@@ -129,30 +129,36 @@
 
     <!-- CHECKOUT MODAL -->
     <div id="modal-checkout" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
-        <div class="bg-white border-2 border-black rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-8 space-y-6">
+        <div class="bg-white border-2 border-black rounded-3xl w-full max-w-md overflow-hidden shadow-2xl p-8 space-y-5">
             <div class="flex justify-between items-center border-b-2 border-black pb-4">
                 <h3 class="font-bold text-xl text-black">ชำระเงิน & บันทึก Supabase</h3>
                 <button onclick="closeCheckoutModal()" class="text-black text-2xl font-bold hover:text-gray-600">&times;</button>
             </div>
             
-            <div class="text-center bg-gray-50 p-6 rounded-2xl border-2 border-black">
+            <div class="text-center bg-gray-50 p-5 rounded-2xl border-2 border-black">
                 <p class="text-sm font-bold text-gray-600">ยอดที่ต้องชำระสุทธิ</p>
-                <h2 id="checkout-total-price" class="text-4xl font-black text-black font-mono mt-2">฿0.00</h2>
+                <h2 id="checkout-total-price" class="text-3xl font-black text-black font-mono mt-1">฿0.00</h2>
             </div>
 
-            <div class="space-y-4">
-                <label class="block font-bold text-black text-sm">รับเงินมา (บาท)</label>
-                <input type="number" id="cash-received" oninput="calculateChange()" placeholder="0.00" class="w-full text-right text-3xl font-mono font-bold p-4 bg-gray-50 border-2 border-black rounded-2xl text-black focus:outline-none focus:ring-2 focus:ring-black">
+            <!-- Note / Customer Name Field -->
+            <div>
+                <label class="block font-bold text-black text-xs mb-1">ชื่อกำลังพล / หมายเหตุ (เช่น หวานน้อย, ลงบัญชีสิ้นเดือน)</label>
+                <input type="text" id="order-note" placeholder="ระบุชื่อหรือรายละเอียด (ถ้ามี)" class="w-full p-3 bg-gray-50 border-2 border-black rounded-xl font-medium text-black text-sm focus:outline-none">
+            </div>
+
+            <div class="space-y-3">
+                <label class="block font-bold text-black text-xs">รับเงินมา (บาท)</label>
+                <input type="number" id="cash-received" oninput="calculateChange()" placeholder="0.00" class="w-full text-right text-3xl font-mono font-bold p-3 bg-gray-50 border-2 border-black rounded-2xl text-black focus:outline-none focus:ring-2 focus:ring-black">
                 
-                <div class="flex justify-between items-center bg-gray-50 p-4 rounded-2xl border-2 border-black">
-                    <span class="text-sm font-bold text-gray-600">เงินทอน</span>
+                <div class="flex justify-between items-center bg-gray-50 p-3 rounded-2xl border-2 border-black">
+                    <span class="text-xs font-bold text-gray-600">เงินทอน</span>
                     <span id="cash-change" class="text-2xl font-mono font-black text-black">฿0.00</span>
                 </div>
             </div>
 
             <div class="flex justify-end gap-3 pt-2">
-                <button onclick="closeCheckoutModal()" class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-black rounded-2xl text-sm font-bold transition">ยกเลิก</button>
-                <button onclick="completePaymentAndSave()" id="btn-confirm-pay" class="px-8 py-3 bg-black hover:bg-gray-800 text-white font-bold rounded-2xl text-sm shadow-xl flex items-center gap-2 transition">
+                <button onclick="closeCheckoutModal()" class="px-5 py-3 bg-gray-200 hover:bg-gray-300 text-black rounded-2xl text-sm font-bold transition">ยกเลิก</button>
+                <button onclick="completePaymentAndSave()" id="btn-confirm-pay" class="px-7 py-3 bg-black hover:bg-gray-800 text-white font-bold rounded-2xl text-sm shadow-xl flex items-center gap-2 transition">
                     <i class="fa-solid fa-check"></i> ยืนยัน & บันทึก
                 </button>
             </div>
