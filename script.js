@@ -121,7 +121,6 @@ function updateQty(index, change) {
     updateCartUI();
 }
 
-// ฟังก์ชันลบรายการออกจากตะกร้าทันทีตามที่แนะนำ
 function removeFromCart(index) {
     cart.splice(index, 1);
     updateCartUI();
@@ -220,22 +219,16 @@ async function completePaymentAndSave() {
             note: orderNote || '-'
         }));
 
-        // 1. บันทึกยอดขายลงตาราง coffee_sales
         const { error } = await supabaseClient
             .from('coffee_sales')
             .insert(rowsToInsert);
 
         if (error) throw error;
 
-        // 2. ตัดสต็อกวัตถุดิบอัตโนมัติ (Inventory Deduction)
         for (const item of cart) {
-            // หักเมล็ดกาแฟ
             await deductInventory('เมล็ดกาแฟ', item.beanGram * item.qty);
-            // หักแก้ว
             await deductInventory(item.cupType, item.qty);
-            // หักฝา
             await deductInventory(item.lidType, item.qty);
-            // หักหลอด (ถ้ามี)
             await deductInventory('หลอด', item.qty);
         }
 
@@ -254,7 +247,6 @@ async function completePaymentAndSave() {
     }
 }
 
-// ฟังก์ชันช่วยตัดสต็อกใน Supabase
 async function deductInventory(itemName, amount) {
     try {
         const { data, error } = await supabaseClient
@@ -300,7 +292,6 @@ async function loadSalesHistory() {
             return;
         }
 
-        // กรองตามวันที่เลือก (ถ้ามี)
         let filteredData = data;
         if (filterDate) {
             filteredData = data.filter(row => row.created_at.startsWith(filterDate));
