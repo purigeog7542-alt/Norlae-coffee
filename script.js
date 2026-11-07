@@ -35,16 +35,16 @@ function setCustomerType(type) {
     if (!btnSoldier || !btnTourist) return;
 
     if (type === 'soldier') {
-        btnSoldier.className = "flex-1 py-2 rounded-lg text-white bg-black font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5";
-        btnTourist.className = "flex-1 py-2 rounded-lg text-black hover:bg-gray-200 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5";
+        btnSoldier.className = "flex-1 py-2 rounded-lg text-white bg-black font-bold text-xs transition flex items-center justify-center gap-1";
+        btnTourist.className = "flex-1 py-2 rounded-lg text-black hover:bg-gray-200 font-bold text-xs transition flex items-center justify-center gap-1";
     } else {
-        btnTourist.className = "flex-1 py-2 rounded-lg text-white bg-black font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5";
-        btnSoldier.className = "flex-1 py-2 rounded-lg text-black hover:bg-gray-200 font-bold text-xs sm:text-sm transition flex items-center justify-center gap-1.5";
+        btnTourist.className = "flex-1 py-2 rounded-lg text-white bg-black font-bold text-xs transition flex items-center justify-center gap-1";
+        btnSoldier.className = "flex-1 py-2 rounded-lg text-black hover:bg-gray-200 font-bold text-xs transition flex items-center justify-center gap-1";
     }
     renderProducts();
 }
 
-function filterCategory(cat) {
+function filterCategory(cat, event) {
     currentCategory = cat;
     document.querySelectorAll('.cat-btn').forEach(btn => {
         btn.className = "cat-btn px-3 py-2 rounded-xl font-bold bg-gray-100 text-black border-2 border-black text-xs whitespace-nowrap";
@@ -72,16 +72,16 @@ function renderProducts() {
         const price = customerType === 'soldier' ? p.priceSoldier : p.priceTourist;
         const profit = price - p.cogs;
         return `
-            <div onclick="addToCart(${p.id})" class="bg-gray-50 border-2 border-black rounded-2xl p-3 flex flex-col justify-between hover:bg-gray-100 transition cursor-pointer select-none shadow-sm">
-                <div class="bg-white border-2 border-black rounded-xl h-20 flex items-center justify-center text-4xl mb-2 relative">
+            <div onclick="addToCart(${p.id})" class="bg-gray-50 border-2 border-black rounded-xl p-3 flex flex-col justify-between hover:bg-gray-100 transition cursor-pointer select-none shadow-sm active:scale-95">
+                <div class="bg-white border-2 border-black rounded-lg h-16 flex items-center justify-center text-3xl mb-2 relative">
                     ${p.icon}
-                    <span class="absolute top-1.5 right-1.5 text-[10px] font-bold bg-black text-white px-2 py-0.5 rounded-full font-mono">ทุน ฿${p.cogs}</span>
+                    <span class="absolute top-1 right-1 text-[9px] font-bold bg-black text-white px-1.5 py-0.5 rounded-full font-mono">ทุน ฿${p.cogs}</span>
                 </div>
                 <div>
-                    <h4 class="font-extrabold text-xs sm:text-sm text-black">${p.name}</h4>
-                    <div class="flex items-center justify-between mt-2 pt-1.5 border-t border-gray-200">
-                        <span class="text-black font-black text-base font-mono">฿${price}</span>
-                        <span class="text-[10px] font-bold text-gray-700 bg-gray-200 px-1.5 py-0.5 rounded-md">กำไร +฿${profit.toFixed(1)}</span>
+                    <h4 class="font-extrabold text-xs text-black">${p.name}</h4>
+                    <div class="flex items-center justify-between mt-1.5 pt-1 border-t border-gray-200">
+                        <span class="text-black font-black text-sm font-mono">฿${price}</span>
+                        <span class="text-[9px] font-bold text-gray-700 bg-gray-200 px-1 py-0.5 rounded">กำไร +฿${profit.toFixed(1)}</span>
                     </div>
                 </div>
             </div>
@@ -134,8 +134,8 @@ function updateCartUI() {
 
     if (cart.length === 0) {
         list.innerHTML = `
-            <div class="h-32 flex flex-col items-center justify-center text-gray-400 space-y-2">
-                <i class="fa-solid fa-basket-shopping text-3xl"></i>
+            <div class="h-28 flex flex-col items-center justify-center text-gray-400 space-y-1.5">
+                <i class="fa-solid fa-basket-shopping text-2xl"></i>
                 <p class="text-xs font-medium">ยังไม่มีรายการในตะกร้า</p>
             </div>
         `;
@@ -154,19 +154,19 @@ function updateCartUI() {
         subtotal += itemTotal;
         totalItems += item.qty;
         return `
-            <div class="flex items-center justify-between bg-gray-50 p-2.5 rounded-xl border-2 border-black text-xs shadow-sm">
-                <div class="flex-1 pr-2">
-                    <h5 class="font-bold text-black text-sm">${item.name}</h5>
-                    <p class="font-mono text-black font-bold mt-0.5">฿${itemTotal} (${item.price} x ${item.qty})</p>
+            <div class="flex items-center justify-between bg-gray-50 p-2 rounded-xl border-2 border-black text-xs shadow-sm">
+                <div class="flex-1 pr-1">
+                    <h5 class="font-bold text-black text-xs">${item.name}</h5>
+                    <p class="font-mono text-black font-bold mt-0.5">฿${itemTotal} (${item.price}x${item.qty})</p>
                 </div>
-                <div class="flex items-center gap-1.5">
-                    <div class="flex items-center gap-1 bg-white border-2 border-black rounded-lg p-1">
+                <div class="flex items-center gap-1">
+                    <div class="flex items-center gap-0.5 bg-white border-2 border-black rounded-lg p-0.5">
                         <button onclick="updateQty(${idx}, -1)" class="w-5 h-5 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded text-black font-black">-</button>
-                        <span class="w-5 text-center font-black text-xs">${item.qty}</span>
+                        <span class="w-4 text-center font-black text-xs">${item.qty}</span>
                         <button onclick="updateQty(${idx}, 1)" class="w-5 h-5 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded text-black font-black">+</button>
                     </div>
-                    <button onclick="removeFromCart(${idx})" class="w-7 h-7 flex items-center justify-center bg-red-100 hover:bg-red-600 hover:text-white text-red-600 border-2 border-black rounded-lg font-bold" title="ลบ">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    <button onclick="removeFromCart(${idx})" class="w-6 h-6 flex items-center justify-center bg-red-100 hover:bg-red-600 hover:text-white text-red-600 border-2 border-black rounded-lg font-bold" title="ลบ">
+                        <i class="fa-solid fa-trash-can text-[10px]"></i>
                     </button>
                 </div>
             </div>
@@ -207,7 +207,7 @@ async function completePaymentAndSave() {
     const orderNote = document.getElementById('order-note').value.trim();
     if (btnConfirm) {
         btnConfirm.disabled = true;
-        btnConfirm.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังบันทึก...`;
+        btnConfirm.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> บันทึก...`;
     }
 
     try {
@@ -232,13 +232,13 @@ async function completePaymentAndSave() {
             await deductInventory('หลอด', item.qty);
         }
 
-        alert('ชำระเงิน, บันทึกยอดขาย และตัดสต็อกสำเร็จ!');
+        alert('ชำระเงินและบันทึกสำเร็จ!');
         cart = [];
         updateCartUI();
         closeCheckoutModal();
     } catch (err) {
         console.error(err);
-        alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + err.message);
+        alert('เกิดข้อผิดพลาด: ' + err.message);
     } finally {
         if (btnConfirm) {
             btnConfirm.disabled = false;
@@ -263,7 +263,7 @@ async function deductInventory(itemName, amount) {
                 .eq('item_name', itemName);
         }
     } catch (e) {
-        console.error('Inventory deduct error for ' + itemName, e);
+        console.error('Inventory error:', e);
     }
 }
 
@@ -272,15 +272,14 @@ async function loadSalesHistory() {
     const filterDate = document.getElementById('filter-date') ? document.getElementById('filter-date').value : '';
     if (!tbody) return;
 
-    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">กำลังดึงข้อมูลจาก Supabase...</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-gray-500 font-medium">กำลังโหลด...</td></tr>`;
 
     try {
-        let query = supabaseClient
+        const { data, error } = await supabaseClient
             .from('coffee_sales')
             .select('*')
             .order('created_at', { ascending: false });
 
-        const { data, error } = await query;
         if (error) throw error;
 
         if (!data || data.length === 0) {
@@ -315,12 +314,12 @@ async function loadSalesHistory() {
             });
             return `
                 <tr class="hover:bg-gray-50 transition">
-                    <td class="px-3 py-3 font-medium text-gray-600">${formattedDate}</td>
-                    <td class="px-3 py-3"><span class="px-2 py-1 bg-black text-white font-bold rounded-lg text-[10px]">${row.customer_type}</span></td>
-                    <td class="px-3 py-3 font-bold text-black">${row.product_name}</td>
-                    <td class="px-3 py-3 text-gray-700">${row.note || '-'}</td>
-                    <td class="px-3 py-3 text-right font-mono font-bold">${row.quantity}</td>
-                    <td class="px-3 py-3 text-right font-mono font-black">฿${row.total_price}</td>
+                    <td class="px-3 py-2.5 font-medium text-gray-600">${formattedDate}</td>
+                    <td class="px-3 py-2.5"><span class="px-2 py-0.5 bg-black text-white font-bold rounded text-[10px]">${row.customer_type}</span></td>
+                    <td class="px-3 py-2.5 font-bold text-black">${row.product_name}</td>
+                    <td class="px-3 py-2.5 text-gray-700">${row.note || '-'}</td>
+                    <td class="px-3 py-2.5 text-right font-mono font-bold">${row.quantity}</td>
+                    <td class="px-3 py-2.5 text-right font-mono font-black">฿${row.total_price}</td>
                 </tr>
             `;
         }).join('');
@@ -332,7 +331,7 @@ async function loadSalesHistory() {
 
     } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-600 font-bold">ไม่สามารถโหลดข้อมูลได้: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-6 text-red-600 font-bold">โหลดข้อมูลไม่สำเร็จ</td></tr>`;
     }
 }
 
@@ -363,7 +362,7 @@ function calculateCosts() {
     const avgCogs = (hotCogs + icedCogs) / 2;
     const avgProfit = avgPrice - avgCogs;
 
-    if (avgProfitEl) avgProfitEl.innerText = `฿${avgProfit.toFixed(2)} / แก้ว`;
+    if (avgProfitEl) avgProfitEl.innerText = `฿${avgProfit.toFixed(2)}`;
 
     const breakEvenCups = avgProfit > 0 ? Math.ceil(totalCapex / avgProfit) : 0;
     if (breakEvenCupsEl) breakEvenCupsEl.innerText = `${breakEvenCups.toLocaleString()} แก้ว`;
