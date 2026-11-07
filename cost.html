@@ -134,6 +134,14 @@
 
     </main>
 
-    <script src="script.js?v=4"></script>
+        <script src="script.js?v=5"></script>
+    <script>
+        // บังคับให้คำนวณทันทีเมื่อเปิดหน้าต้นทุน
+        window.addEventListener('DOMContentLoaded', () => {
+            if (typeof calculateCosts === 'function') {
+                calculateCosts();
+            }
+        });
+    </script>
 </body>
 </html>
