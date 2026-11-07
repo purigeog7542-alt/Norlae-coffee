@@ -4,97 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แดชบอร์ด & ยอดขาย - Nor Lae Bunker Coffee</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Prompt -->
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Prompt', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased bg-white text-black">
 
     <!-- NAVBAR -->
     <header class="border-b-2 border-black bg-white sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-3 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <div class="p-2 bg-black text-white rounded-xl">
-                    <i class="fa-solid fa-mug-hot text-xl"></i>
+                    <i class="fa-solid fa-mug-hot text-lg"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-sm sm:text-base text-black">Nor Lae Coffee</h1>
-                    <p class="text-[10px] sm:text-xs text-gray-600">ฐานนอแล</p>
+                    <h1 class="font-bold text-xs sm:text-sm text-black">Nor Lae Coffee</h1>
+                    <p class="text-[9px] text-gray-600">สรุปยอดขาย</p>
                 </div>
             </div>
 
-            <!-- Navigation Links -->
             <div class="flex items-center gap-1 bg-gray-100 p-1 rounded-xl border-2 border-black text-xs">
-                <a href="index.html" class="px-3 py-1.5 rounded-lg font-bold text-black hover:bg-gray-200 transition flex items-center gap-1">
-                    <i class="fa-solid fa-cash-register"></i> POS
-                </a>
-                <a href="dashboard.html" class="px-3 py-1.5 rounded-lg font-bold bg-black text-white transition flex items-center gap-1 shadow">
-                    <i class="fa-solid fa-chart-pie"></i> สรุป
-                </a>
-                <a href="cost.html" class="px-3 py-1.5 rounded-lg font-bold text-black hover:bg-gray-200 transition flex items-center gap-1">
-                    <i class="fa-solid fa-calculator"></i> ต้นทุน
-                </a>
+                <a href="index.html" class="px-2.5 py-1.5 rounded-lg font-bold text-black hover:bg-gray-200 transition">POS</a>
+                <a href="dashboard.html" class="px-2.5 py-1.5 rounded-lg font-bold bg-black text-white transition shadow">สรุป</a>
+                <a href="cost.html" class="px-2.5 py-1.5 rounded-lg font-bold text-black hover:bg-gray-200 transition">ต้นทุน</a>
             </div>
         </div>
     </header>
 
     <!-- MAIN CONTAINER -->
-    <main class="flex-1 max-w-7xl w-full mx-auto px-2 sm:px-4 py-6 space-y-4">
+    <main class="flex-1 max-w-7xl w-full mx-auto px-3 py-4 space-y-4">
         
         <!-- Filter Header -->
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-3 bg-white border-2 border-black rounded-2xl p-4 shadow-md">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-2 bg-white border-2 border-black rounded-2xl p-3 shadow-md">
             <div>
-                <h2 class="text-base sm:text-lg font-bold text-black">สรุปภาพรวมยอดขาย</h2>
+                <h2 class="text-sm sm:text-base font-bold text-black">สรุปภาพรวมยอดขาย</h2>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
-                <input type="date" id="filter-date" onchange="loadSalesHistory()" class="p-2 bg-gray-50 border-2 border-black rounded-xl text-xs sm:text-sm font-bold flex-1">
-                <button onclick="loadSalesHistory()" class="px-3 py-2 bg-black text-white rounded-xl text-xs sm:text-sm font-bold hover:bg-gray-800 transition">รีเฟรช</button>
+                <input type="date" id="filter-date" onchange="loadSalesHistory()" class="p-2 bg-gray-50 border-2 border-black rounded-xl text-xs font-bold flex-1">
+                <button onclick="loadSalesHistory()" class="px-3 py-2 bg-black text-white rounded-xl text-xs font-bold hover:bg-gray-800 transition">รีเฟรช</button>
             </div>
         </div>
 
         <!-- KPI Cards Grid -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-md">
-                <span class="text-xs font-bold text-gray-600">ยอดขายรวม</span>
-                <div id="stats-total-revenue" class="text-lg sm:text-2xl font-black text-black mt-1 font-mono">฿0.00</div>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+            <div class="bg-white border-2 border-black rounded-2xl p-3 shadow-md">
+                <span class="text-[11px] font-bold text-gray-600">ยอดขายรวม</span>
+                <div id="stats-total-revenue" class="text-base sm:text-xl font-black text-black mt-1 font-mono">฿0.00</div>
             </div>
-            <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-md">
-                <span class="text-xs font-bold text-gray-600">กำลังพล (แก้ว)</span>
-                <div id="stats-soldier-cups" class="text-lg sm:text-2xl font-black text-black mt-1 font-mono">0 แก้ว</div>
+            <div class="bg-white border-2 border-black rounded-2xl p-3 shadow-md">
+                <span class="text-[11px] font-bold text-gray-600">กำลังพล (แก้ว)</span>
+                <div id="stats-soldier-cups" class="text-base sm:text-xl font-black text-black mt-1 font-mono">0 แก้ว</div>
             </div>
-            <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-md">
-                <span class="text-xs font-bold text-gray-600">นักท่องเที่ยว (แก้ว)</span>
-                <div id="stats-tourist-cups" class="text-lg sm:text-2xl font-black text-black mt-1 font-mono">0 แก้ว</div>
+            <div class="bg-white border-2 border-black rounded-2xl p-3 shadow-md">
+                <span class="text-[11px] font-bold text-gray-600">นักท่องเที่ยว (แก้ว)</span>
+                <div id="stats-tourist-cups" class="text-base sm:text-xl font-black text-black mt-1 font-mono">0 แก้ว</div>
             </div>
-            <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-md">
-                <span class="text-xs font-bold text-gray-600">ออเดอร์ทั้งหมด</span>
-                <div id="stats-total-orders" class="text-lg sm:text-2xl font-black text-black mt-1 font-mono">0 รายการ</div>
+            <div class="bg-white border-2 border-black rounded-2xl p-3 shadow-md">
+                <span class="text-[11px] font-bold text-gray-600">ออเดอร์ทั้งหมด</span>
+                <div id="stats-total-orders" class="text-base sm:text-xl font-black text-black mt-1 font-mono">0 รายการ</div>
             </div>
         </div>
 
         <!-- Sales History Table -->
-        <div class="bg-white border-2 border-black rounded-2xl p-4 sm:p-6 shadow-lg">
-            <h2 class="text-base sm:text-lg font-bold text-black mb-4">ประวัติการขายล่าสุด</h2>
+        <div class="bg-white border-2 border-black rounded-2xl p-4 shadow-lg">
+            <h2 class="text-sm sm:text-base font-bold text-black mb-3">ประวัติการขายล่าสุด</h2>
             <div class="overflow-x-auto">
-                <table class="w-full text-xs sm:text-sm text-left text-black">
-                    <thead class="bg-black text-white uppercase text-[10px] sm:text-xs">
+                <table class="w-full text-xs text-left text-black whitespace-nowrap">
+                    <thead class="bg-black text-white uppercase text-[10px]">
                         <tr>
-                            <th class="px-3 py-2.5 rounded-l-xl">เวลา</th>
-                            <th class="px-3 py-2.5">ประเภท</th>
-                            <th class="px-3 py-2.5">รายการ</th>
-                            <th class="px-3 py-2.5">หมายเหตุ</th>
-                            <th class="px-3 py-2.5 text-right">จำนวน</th>
-                            <th class="px-3 py-2.5 text-right rounded-r-xl">ยอดรวม</th>
+                            <th class="px-3 py-2 rounded-l-xl">เวลา</th>
+                            <th class="px-3 py-2">ประเภท</th>
+                            <th class="px-3 py-2">รายการ</th>
+                            <th class="px-3 py-2">หมายเหตุ</th>
+                            <th class="px-3 py-2 text-right">จำนวน</th>
+                            <th class="px-3 py-2 text-right rounded-r-xl">ยอดรวม</th>
                         </tr>
                     </thead>
                     <tbody id="sales-history-body" class="divide-y divide-gray-200">
@@ -107,6 +94,6 @@
         </div>
     </main>
 
-    <script src="script.js?v=3"></script>
+    <script src="script.js?v=4"></script>
 </body>
 </html>
