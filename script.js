@@ -6,8 +6,8 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // --- PRODUCT CATALOG ---
 const PRODUCTS = [
-    { id: 1, name: 'อเมริกาโน่ร้อน', category: 'hot-coffee', icon: '☕', cogs: 16.82, priceSoldier: 25, priceTourist: 35 },
-    { id: 2, name: 'อเมริกาโน่เย็น', category: 'iced-coffee', icon: '🧊', cogs: 17.50, priceSoldier: 30, priceTourist: 45 }
+    { id: 1, name: 'อเมริกาโน่ร้อน', category: 'hot-coffee', icon: '☕', cogs: 16.82, priceSoldier: 25, priceTourist: 35, beanGram: 18, cupType: 'แก้วร้อน', lidType: 'ฝาร้อน' },
+    { id: 2, name: 'อเมริกาโน่เย็น', category: 'iced-coffee', icon: '🧊', cogs: 17.50, priceSoldier: 30, priceTourist: 45, beanGram: 20, cupType: 'แก้วเย็น', lidType: 'ฝาเย็น' }
 ];
 
 let customerType = 'soldier'; // 'soldier' or 'tourist'
@@ -104,7 +104,10 @@ function addToCart(productId) {
             name: `${product.name} (${typeLabel})`,
             price: price,
             qty: 1,
-            typeLabel: typeLabel
+            typeLabel: typeLabel,
+            beanGram: product.beanGram,
+            cupType: product.cupType,
+            lidType: product.lidType
         });
     }
     updateCartUI();
@@ -115,6 +118,12 @@ function updateQty(index, change) {
     if (cart[index].qty <= 0) {
         cart.splice(index, 1);
     }
+    updateCartUI();
+}
+
+// ฟังก์ชันลบรายการออกจากตะกร้าทันทีตามที่แนะนำ
+function removeFromCart(index) {
+    cart.splice(index, 1);
     updateCartUI();
 }
 
@@ -151,10 +160,15 @@ function updateCartUI() {
                     <h5 class="font-bold text-black text-base">${item.name}</h5>
                     <p class="font-mono text-black font-bold mt-1 text-sm">฿${itemTotal} (${item.price} x ${item.qty})</p>
                 </div>
-                <div class="flex items-center gap-2 bg-white border-2 border-black rounded-xl p-1.5 shadow-sm">
-                    <button onclick="updateQty(${idx}, -1)" class="w-7 h-7 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded-lg text-black font-black transition">-</button>
-                    <span class="w-7 text-center font-black text-base">${item.qty}</span>
-                    <button onclick="updateQty(${idx}, 1)" class="w-7 h-7 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded-lg text-black font-black transition">+</button>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1 bg-white border-2 border-black rounded-xl p-1 shadow-sm">
+                        <button onclick="updateQty(${idx}, -1)" class="w-6 h-6 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded-lg text-black font-black transition">-</button>
+                        <span class="w-6 text-center font-black text-sm">${item.qty}</span>
+                        <button onclick="updateQty(${idx}, 1)" class="w-6 h-6 flex items-center justify-center bg-gray-200 hover:bg-black hover:text-white rounded-lg text-black font-black transition">+</button>
+                    </div>
+                    <button onclick="removeFromCart(${idx})" class="w-8 h-8 flex items-center justify-center bg-red-100 hover:bg-red-600 hover:text-white text-red-600 border-2 border-black rounded-xl font-bold transition" title="ลบรายการ">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
                 </div>
             </div>
         `;
@@ -172,6 +186,7 @@ function openCheckoutModal() {
     document.getElementById('checkout-total-price').innerText = `฿${subtotal.toFixed(2)}`;
     document.getElementById('cash-received').value = '';
     document.getElementById('cash-change').innerText = '฿0.00';
+    document.getElementById('order-note').value = '';
     document.getElementById('modal-checkout').classList.remove('hidden');
 }
 
@@ -187,9 +202,10 @@ function calculateChange() {
     document.getElementById('cash-change').innerText = `฿${Math.max(0, change).toFixed(2)}`;
 }
 
-// --- SUPABASE ACTIONS ---
+// --- SUPABASE ACTIONS & INVENTORY DEDUCTION ---
 async function completePaymentAndSave() {
     const btnConfirm = document.getElementById('btn-confirm-pay');
+    const orderNote = document.getElementById('order-note').value.trim();
     if (btnConfirm) {
         btnConfirm.disabled = true;
         btnConfirm.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังบันทึก...`;
@@ -200,16 +216,30 @@ async function completePaymentAndSave() {
             customer_type: item.typeLabel,
             product_name: item.rawName,
             quantity: item.qty,
-            total_price: item.price * item.qty
+            total_price: item.price * item.qty,
+            note: orderNote || '-'
         }));
 
+        // 1. บันทึกยอดขายลงตาราง coffee_sales
         const { error } = await supabaseClient
             .from('coffee_sales')
             .insert(rowsToInsert);
 
         if (error) throw error;
 
-        alert('ชำระเงินและบันทึกข้อมูลลง Supabase สำเร็จ!');
+        // 2. ตัดสต็อกวัตถุดิบอัตโนมัติ (Inventory Deduction)
+        for (const item of cart) {
+            // หักเมล็ดกาแฟ
+            await deductInventory('เมล็ดกาแฟ', item.beanGram * item.qty);
+            // หักแก้ว
+            await deductInventory(item.cupType, item.qty);
+            // หักฝา
+            await deductInventory(item.lidType, item.qty);
+            // หักหลอด (ถ้ามี)
+            await deductInventory('หลอด', item.qty);
+        }
+
+        alert('ชำระเงิน, บันทึกยอดขาย และตัดสต็อกสำเร็จ!');
         cart = [];
         updateCartUI();
         closeCheckoutModal();
@@ -224,35 +254,70 @@ async function completePaymentAndSave() {
     }
 }
 
-async function loadSalesHistory() {
-    const tbody = document.getElementById('sales-history-body');
-    if (!tbody) return;
-
-    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 font-medium text-base">กำลังดึงข้อมูลจาก Supabase...</td></tr>`;
-
+// ฟังก์ชันช่วยตัดสต็อกใน Supabase
+async function deductInventory(itemName, amount) {
     try {
         const { data, error } = await supabaseClient
+            .from('inventory')
+            .select('*')
+            .eq('item_name', itemName)
+            .single();
+
+        if (data) {
+            const newQty = Math.max(0, Number(data.quantity) - amount);
+            await supabaseClient
+                .from('inventory')
+                .update({ quantity: newQty })
+                .eq('item_name', itemName);
+        }
+    } catch (e) {
+        console.error('Inventory deduct error for ' + itemName, e);
+    }
+}
+
+async function loadSalesHistory() {
+    const tbody = document.getElementById('sales-history-body');
+    const filterDate = document.getElementById('filter-date') ? document.getElementById('filter-date').value : '';
+    if (!tbody) return;
+
+    tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 font-medium text-base">กำลังดึงข้อมูลจาก Supabase...</td></tr>`;
+
+    try {
+        let query = supabaseClient
             .from('coffee_sales')
             .select('*')
-            .order('created_at', { ascending: false })
-            .limit(50);
+            .order('created_at', { ascending: false });
 
+        const { data, error } = await query;
         if (error) throw error;
 
         if (!data || data.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500 font-medium text-base">ยังไม่มีประวัติการขาย</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-gray-500 font-medium text-base">ยังไม่มีประวัติการขาย</td></tr>`;
             document.getElementById('stats-total-revenue').innerText = '฿0.00';
-            document.getElementById('stats-total-cups').innerText = '0 แก้ว';
+            document.getElementById('stats-soldier-cups').innerText = '0 แก้ว';
+            document.getElementById('stats-tourist-cups').innerText = '0 แก้ว';
             document.getElementById('stats-total-orders').innerText = '0 รายการ';
             return;
         }
 
-        let totalRev = 0;
-        let totalCups = 0;
+        // กรองตามวันที่เลือก (ถ้ามี)
+        let filteredData = data;
+        if (filterDate) {
+            filteredData = data.filter(row => row.created_at.startsWith(filterDate));
+        }
 
-        tbody.innerHTML = data.map(row => {
+        let totalRev = 0;
+        let soldierCups = 0;
+        let touristCups = 0;
+
+        tbody.innerHTML = filteredData.map(row => {
             totalRev += Number(row.total_price);
-            totalCups += Number(row.quantity);
+            if (row.customer_type === 'กำลังพล') {
+                soldierCups += Number(row.quantity);
+            } else {
+                touristCups += Number(row.quantity);
+            }
+
             const formattedDate = new Date(row.created_at).toLocaleString('th-TH', {
                 dateStyle: 'short',
                 timeStyle: 'medium'
@@ -262,6 +327,7 @@ async function loadSalesHistory() {
                     <td class="px-6 py-4 font-medium text-gray-600">${formattedDate}</td>
                     <td class="px-6 py-4"><span class="px-3 py-1 bg-black text-white font-bold rounded-xl text-xs">${row.customer_type}</span></td>
                     <td class="px-6 py-4 font-bold text-black text-base">${row.product_name}</td>
+                    <td class="px-6 py-4 text-gray-700 font-medium">${row.note || '-'}</td>
                     <td class="px-6 py-4 text-right font-mono font-bold">${row.quantity}</td>
                     <td class="px-6 py-4 text-right font-mono font-black text-lg">฿${row.total_price}</td>
                 </tr>
@@ -269,12 +335,13 @@ async function loadSalesHistory() {
         }).join('');
 
         document.getElementById('stats-total-revenue').innerText = `฿${totalRev.toLocaleString()}`;
-        document.getElementById('stats-total-cups').innerText = `${totalCups.toLocaleString()} แก้ว`;
-        document.getElementById('stats-total-orders').innerText = `${data.length} รายการ`;
+        document.getElementById('stats-soldier-cups').innerText = `${soldierCups.toLocaleString()} แก้ว`;
+        document.getElementById('stats-tourist-cups').innerText = `${touristCups.toLocaleString()} แก้ว`;
+        document.getElementById('stats-total-orders').innerText = `${filteredData.length} รายการ`;
 
     } catch (err) {
         console.error(err);
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-red-600 font-bold">ไม่สามารถโหลดข้อมูลได้: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-red-600 font-bold">ไม่สามารถโหลดข้อมูลได้: ${err.message}</td></tr>`;
     }
 }
 
@@ -289,20 +356,13 @@ function calculateCosts() {
     const iceBag = parseFloat(document.getElementById('cost-ice-bag').value) || 0;
     const totalCapex = parseFloat(document.getElementById('total-capex').value) || 0;
 
-    // สมมติฐานการใช้น้ำแข็งต่อกระสอบใหญ่: 1 กระสอบใหญ่ทำน้ำแข็งใส่แก้วได้ประมาณ 35 แก้ว
     const icePerCup = iceBag / 35;
-
-    // สูตรคำนวณต้นทุนต่อแก้ว (Hot: เมล็ด 18g + แก้ว + ฝา)
     const hotCogs = (beanPerGram * 18) + hotCup + hotLid;
-    
-    // สูตรคำนวณต้นทุนต่อแก้ว (Iced: เมล็ด 20g + แก้ว + ฝา + หลอด + น้ำแข็ง)
     const icedCogs = (beanPerGram * 20) + icedCup + icedLid + straw + icePerCup;
 
     document.getElementById('result-hot-cogs').innerText = `฿${hotCogs.toFixed(2)}`;
     document.getElementById('result-iced-cogs').innerText = `฿${icedCogs.toFixed(2)}`;
 
-    // คำนวณกำไรเฉลี่ยและจุดคุ้มทุน (สมมติสัดส่วนขายกำลังพล 50% นักท่องเที่ยว 50%)
-    // ราคาเฉลี่ยร้อน = (25+35)/2 = 30 บาท, เย็น = (30+45)/2 = 37.5 บาท
     const avgPrice = (30 + 37.5) / 2;
     const avgCogs = (hotCogs + icedCogs) / 2;
     const avgProfit = avgPrice - avgCogs;
