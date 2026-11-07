@@ -3,11 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ร้านกาแฟสวัสดิการบ้านนอแล - Nor Lae Bunker Coffee</title>
+    <title>ระบบขาย (POS) - Nor Lae Bunker Coffee</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts: Prompt & Sarabun -->
@@ -15,11 +13,7 @@
     <!-- Supabase JS Client -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body {
-            font-family: 'Prompt', 'Sarabun', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
+        body { font-family: 'Prompt', 'Sarabun', sans-serif; background-color: #0f172a; color: #f8fafc; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.1); }
         ::-webkit-scrollbar-thumb { background: #38bdf8; border-radius: 4px; }
@@ -36,18 +30,18 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-base text-slate-100">Nor Lae Bunker Coffee</h1>
-                    <p class="text-[11px] text-slate-400">บก.ควบคุมผาดำ • ระบบ POS & Supabase Database</p>
+                    <p class="text-[11px] text-slate-400">บก.ควบคุมผาดำ • ระบบ POS</p>
                 </div>
             </div>
 
-            <!-- Navigation Tabs Switcher -->
+            <!-- Navigation Links -->
             <div class="flex items-center gap-1 bg-slate-800 p-1 rounded-xl text-xs">
-                <button onclick="switchView('pos')" id="tab-pos" class="px-4 py-2 rounded-lg font-bold bg-amber-500 text-slate-950 transition flex items-center gap-2 shadow">
+                <a href="index.html" class="px-4 py-2 rounded-lg font-bold bg-amber-500 text-slate-950 transition flex items-center gap-2 shadow">
                     <i class="fa-solid fa-cash-register"></i> ระบบขาย (POS)
-                </button>
-                <button onclick="switchView('dashboard')" id="tab-dashboard" class="px-4 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-2">
+                </a>
+                <a href="dashboard.html" class="px-4 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-2">
                     <i class="fa-solid fa-chart-pie"></i> แดชบอร์ด & ยอดขาย
-                </button>
+                </a>
             </div>
 
             <div class="hidden sm:flex items-center gap-2">
@@ -61,12 +55,10 @@
 
     <!-- MAIN CONTAINER -->
     <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
-
-        <!-- VIEW 1: POS SYSTEM -->
-        <div id="view-pos" class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-7rem)]">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-7rem)]">
             
+            <!-- Left & Center: Products Catalog -->
             <div class="lg:col-span-2 flex flex-col bg-slate-900 border border-slate-800 rounded-2xl p-4 overflow-hidden shadow-xl">
-                
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mb-4">
                     <div class="relative w-full sm:w-64">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -97,7 +89,7 @@
                 </div>
             </div>
 
-            <!-- Cart & Checkout -->
+            <!-- Right: Cart & Checkout -->
             <div class="flex flex-col bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-xl h-[calc(100vh-7rem)]">
                 <div class="flex items-center justify-between pb-3 border-b border-slate-800">
                     <h2 class="font-bold text-sm text-slate-100 flex items-center gap-2">
@@ -131,53 +123,6 @@
             </div>
 
         </div>
-
-        <!-- VIEW 2: DASHBOARD -->
-        <div id="view-dashboard" class="hidden space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                    <span class="text-xs text-slate-400">ยอดขายรวมทั้งหมด</span>
-                    <div id="stats-total-revenue" class="text-2xl font-bold text-amber-400 mt-1">฿0.00</div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                    <span class="text-xs text-slate-400">จำนวนแก้วที่ขายได้</span>
-                    <div id="stats-total-cups" class="text-2xl font-bold text-emerald-400 mt-1">0 แก้ว</div>
-                </div>
-                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
-                    <span class="text-xs text-slate-400">จำนวนออเดอร์ทั้งหมด</span>
-                    <div id="stats-total-orders" class="text-2xl font-bold text-sky-400 mt-1">0 รายการ</div>
-                </div>
-            </div>
-
-            <!-- Sales History Table -->
-            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-base font-bold text-slate-100">ประวัติการขายล่าสุด (จาก Supabase)</h2>
-                    <button onclick="loadSalesHistory()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs flex items-center gap-1.5 transition">
-                        <i class="fa-solid fa-rotate"></i> โหลดข้อมูลใหม่
-                    </button>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs text-left text-slate-300">
-                        <thead class="bg-slate-800/60 text-slate-400 uppercase">
-                            <tr>
-                                <th class="px-4 py-3 rounded-l-lg">เวลา</th>
-                                <th class="px-4 py-3">ประเภทลูกค้า</th>
-                                <th class="px-4 py-3">รายการสินค้า</th>
-                                <th class="px-4 py-3 text-right">จำนวน</th>
-                                <th class="px-4 py-3 text-right rounded-r-lg">ยอดรวม (บาท)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="sales-history-body" class="divide-y divide-slate-800">
-                            <tr>
-                                <td colspan="5" class="text-center py-6 text-slate-500">กำลังโหลดข้อมูล...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
     </main>
 
     <!-- CHECKOUT MODAL -->
@@ -212,287 +157,7 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
-    <script>
-        // ตั้งค่า Supabase Project Credentials ของคุณที่นี่
-        const SUPABASE_URL = 'https://wtyvtjvzvgurybtcnnsf.supabase.co'; 
-const SUPABASE_ANON_KEY = 'sb_publishable_JLPzS9fSB0-mJN9D3Vssiw_ibQEXq4d';
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-        // เมนูกาแฟสวัสดิการบ้านนอแล
-        const PRODUCTS = [
-            { id: 1, name: 'อเมริกาโน่ร้อน', category: 'hot-coffee', icon: '☕', cogs: 16.82, priceSoldier: 25, priceTourist: 35 },
-            { id: 2, name: 'อเมริกาโน่เย็น', category: 'iced-coffee', icon: '🧊', cogs: 17.50, priceSoldier: 30, priceTourist: 45 }
-        ];
-
-        let customerType = 'soldier'; // 'soldier' or 'tourist'
-        let currentCategory = 'all';
-        let cart = [];
-
-        window.onload = function() {
-            renderProducts();
-            loadSalesHistory();
-        };
-
-        function switchView(view) {
-            const posView = document.getElementById('view-pos');
-            const dashView = document.getElementById('view-dashboard');
-            const tabPos = document.getElementById('tab-pos');
-            const tabDash = document.getElementById('tab-dashboard');
-
-            if (view === 'pos') {
-                posView.classList.remove('hidden');
-                dashView.classList.add('hidden');
-                tabPos.className = "px-4 py-2 rounded-lg font-bold bg-amber-500 text-slate-950 transition flex items-center gap-2 shadow";
-                tabDash.className = "px-4 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-2";
-            } else {
-                posView.classList.add('hidden');
-                dashView.classList.remove('hidden');
-                tabDash.className = "px-4 py-2 rounded-lg font-bold bg-amber-500 text-slate-950 transition flex items-center gap-2 shadow";
-                tabPos.className = "px-4 py-2 rounded-lg font-medium text-slate-300 hover:text-white transition flex items-center gap-2";
-                loadSalesHistory();
-            }
-        }
-
-        function setCustomerType(type) {
-            customerType = type;
-            const btnSoldier = document.getElementById('btn-soldier');
-            const btnTourist = document.getElementById('btn-tourist');
-
-            if (type === 'soldier') {
-                btnSoldier.className = "px-3 py-1.5 rounded-lg text-slate-950 bg-amber-500 font-bold transition flex items-center gap-1.5";
-                btnTourist.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5";
-            } else {
-                btnTourist.className = "px-3 py-1.5 rounded-lg text-slate-950 bg-amber-500 font-bold transition flex items-center gap-1.5";
-                btnSoldier.className = "px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition flex items-center gap-1.5";
-            }
-            renderProducts();
-        }
-
-        function filterCategory(cat) {
-            currentCategory = cat;
-            document.querySelectorAll('.cat-btn').forEach(btn => {
-                btn.className = "cat-btn px-4 py-2 rounded-full font-medium bg-slate-800 text-slate-300 hover:bg-slate-700 whitespace-nowrap";
-            });
-            event.currentTarget.className = "cat-btn px-4 py-2 rounded-full font-medium bg-amber-500 text-slate-950 whitespace-nowrap shadow";
-            renderProducts();
-        }
-
-        function renderProducts() {
-            const container = document.getElementById('pos-products-grid');
-            const keyword = document.getElementById('search-product').value.toLowerCase();
-
-            const items = PRODUCTS.filter(p => {
-                const matchCat = (currentCategory === 'all' || p.category === currentCategory);
-                const matchName = p.name.toLowerCase().includes(keyword);
-                return matchCat && matchName;
-            });
-
-            container.innerHTML = items.map(p => {
-                const price = customerType === 'soldier' ? p.priceSoldier : p.priceTourist;
-                const profit = price - p.cogs;
-                return `
-                    <div onclick="addToCart(${p.id})" class="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex flex-col justify-between hover:border-amber-500/50 transition cursor-pointer select-none">
-                        <div class="bg-slate-900 rounded-xl h-24 flex items-center justify-center text-4xl mb-3 relative">
-                            ${p.icon}
-                            <span class="absolute top-2 right-2 text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-full">ทุน ฿${p.cogs}</span>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-200">${p.name}</h4>
-                            <div class="flex items-center justify-between mt-2">
-                                <span class="text-amber-400 font-bold text-base font-mono">฿${price}</span>
-                                <span class="text-xs text-slate-500">กำไร +฿${profit.toFixed(1)}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function addToCart(productId) {
-            const product = PRODUCTS.find(p => p.id === productId);
-            const price = customerType === 'soldier' ? product.priceSoldier : product.priceTourist;
-            const typeLabel = customerType === 'soldier' ? 'กำลังพล' : 'ราคาปกติ';
-
-            const existing = cart.find(item => item.id === productId && item.type === customerType);
-            if (existing) {
-                existing.qty++;
-            } else {
-                cart.push({
-                    id: product.id,
-                    rawName: product.name,
-                    name: `${product.name} (${typeLabel})`,
-                    price: price,
-                    qty: 1,
-                    typeLabel: typeLabel
-                });
-            }
-            updateCartUI();
-        }
-
-        function updateQty(index, change) {
-            cart[index].qty += change;
-            if (cart[index].qty <= 0) {
-                cart.splice(index, 1);
-            }
-            updateCartUI();
-        }
-
-        function updateCartUI() {
-            const list = document.getElementById('cart-items-list');
-            const countTag = document.getElementById('cart-item-count');
-            const btnCheckout = document.getElementById('btn-checkout');
-
-            if (cart.length === 0) {
-                list.innerHTML = `
-                    <div class="h-full flex flex-col items-center justify-center text-slate-500 space-y-2">
-                        <i class="fa-solid fa-basket-shopping text-3xl"></i>
-                        <p class="text-xs">ยังไม่มีรายการในตะกร้า</p>
-                    </div>
-                `;
-                countTag.innerText = '0 ชิ้น';
-                document.getElementById('cart-subtotal').innerText = '฿0.00';
-                document.getElementById('cart-total').innerText = '฿0.00';
-                btnCheckout.disabled = true;
-                return;
-            }
-
-            let subtotal = 0;
-            let totalItems = 0;
-
-            list.innerHTML = cart.map((item, idx) => {
-                const itemTotal = item.price * item.qty;
-                subtotal += itemTotal;
-                totalItems += item.qty;
-                return `
-                    <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded-xl border border-slate-800 text-xs">
-                        <div class="flex-1 pr-2">
-                            <h5 class="font-bold text-slate-200">${item.name}</h5>
-                            <p class="font-mono text-amber-400 mt-0.5">฿${itemTotal} (${item.price}x${item.qty})</p>
-                        </div>
-                        <div class="flex items-center gap-1 bg-slate-900 border border-slate-700 rounded-lg p-1">
-                            <button onclick="updateQty(${idx}, -1)" class="w-5 h-5 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded text-slate-200 font-bold">-</button>
-                            <span class="w-5 text-center font-bold">${item.qty}</span>
-                            <button onclick="updateQty(${idx}, 1)" class="w-5 h-5 flex items-center justify-center bg-slate-800 hover:bg-slate-700 rounded text-slate-200 font-bold">+</button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            countTag.innerText = `${totalItems} ชิ้น`;
-            document.getElementById('cart-subtotal').innerText = `฿${subtotal.toFixed(2)}`;
-            document.getElementById('cart-total').innerText = `฿${subtotal.toFixed(2)}`;
-            btnCheckout.disabled = false;
-        }
-
-        function openCheckoutModal() {
-            if (cart.length === 0) return;
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            document.getElementById('checkout-total-price').innerText = `฿${subtotal.toFixed(2)}`;
-            document.getElementById('cash-received').value = '';
-            document.getElementById('cash-change').innerText = '฿0.00';
-            document.getElementById('modal-checkout').classList.remove('hidden');
-        }
-
-        function closeCheckoutModal() {
-            document.getElementById('modal-checkout').classList.add('hidden');
-        }
-
-        function calculateChange() {
-            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-            const received = parseFloat(document.getElementById('cash-received').value) || 0;
-            const change = received - subtotal;
-            document.getElementById('cash-change').innerText = `฿${Math.max(0, change).toFixed(2)}`;
-        }
-
-        // บันทึกข้อมูลลง Supabase
-        async function completePaymentAndSave() {
-            const btnConfirm = document.getElementById('btn-confirm-pay');
-            btnConfirm.disabled = true;
-            btnConfirm.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i> กำลังบันทึก...`;
-
-            try {
-                // แปลงรายการในตะกร้าให้อยู่ในรูป Array ที่ตรงกับตาราง Supabase
-                const rowsToInsert = cart.map(item => ({
-                    customer_type: item.typeLabel,
-                    product_name: item.rawName,
-                    quantity: item.qty,
-                    total_price: item.price * item.qty
-                }));
-
-                const { error } = await supabaseClient
-                    .from('coffee_sales')
-                    .insert(rowsToInsert);
-
-                if (error) throw error;
-
-                alert('ชำระเงินและบันทึกข้อมูลลง Supabase สำเร็จ!');
-                cart = [];
-                updateCartUI();
-                closeCheckoutModal();
-                loadSalesHistory();
-            } catch (err) {
-                console.error(err);
-                alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล: ' + err.message);
-            } finally {
-                btnConfirm.disabled = false;
-                btnConfirm.innerHTML = `<i class="fa-solid fa-check"></i> ยืนยัน & บันทึกลง Supabase`;
-            }
-        }
-
-        // โหลดประวัติการขายมาแสดงบน Dashboard
-        async function loadSalesHistory() {
-            const tbody = document.getElementById('sales-history-body');
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500">กำลังดึงข้อมูลจาก Supabase...</td></tr>`;
-
-            try {
-                const { data, error } = await supabaseClient
-                    .from('coffee_sales')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-                    .limit(50);
-
-                if (error) throw error;
-
-                if (!data || data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500">ยังไม่มีประวัติการขาย</td></tr>`;
-                    document.getElementById('stats-total-revenue').innerText = '฿0.00';
-                    document.getElementById('stats-total-cups').innerText = '0 แก้ว';
-                    document.getElementById('stats-total-orders').innerText = '0 รายการ';
-                    return;
-                }
-
-                let totalRev = 0;
-                let totalCups = 0;
-
-                tbody.innerHTML = data.map(row => {
-                    totalRev += Number(row.total_price);
-                    totalCups += Number(row.quantity);
-                    const formattedDate = new Date(row.created_at).toLocaleString('th-TH', {
-                        dateStyle: 'short',
-                        timeStyle: 'medium'
-                    });
-                    return `
-                        <tr class="hover:bg-slate-800/30 transition">
-                            <td class="px-4 py-3 text-slate-400">${formattedDate}</td>
-                            <td class="px-4 py-3"><span class="px-2 py-0.5 bg-slate-800 text-slate-300 rounded">${row.customer_type}</span></td>
-                            <td class="px-4 py-3 font-medium text-slate-200">${row.product_name}</td>
-                            <td class="px-4 py-3 text-right">${row.quantity}</td>
-                            <td class="px-4 py-3 text-right font-mono font-bold text-amber-400">฿${row.total_price}</td>
-                        </tr>
-                    `;
-                }).join('');
-
-                document.getElementById('stats-total-revenue').innerText = `฿${totalRev.toLocaleString()}`;
-                document.getElementById('stats-total-cups').innerText = `${totalCups.toLocaleString()} แก้ว`;
-                document.getElementById('stats-total-orders').innerText = `${data.length} รายการ`;
-
-            } catch (err) {
-                console.error(err);
-                tbody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-red-400">ไม่สามารถโหลดข้อมูลได้: ${err.message}</td></tr>`;
-            }
-        }
-    </script>
+    <!-- Script File -->
+    <script src="script.js"></script>
 </body>
 </html>
