@@ -4,12 +4,12 @@ const SUPABASE_ANON_KEY = 'sb_publishable_JLPzS9fSB0-mJN9D3Vssiw_ibQEXq4d';
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-let PRODUCTS = []; // ดึงจาก Supabase table 'products'
+let PRODUCTS = []; 
 let customerType = 'soldier'; // 'soldier' or 'tourist'
 let currentCategory = 'all';
 let cart = [];
-let activeBills = []; // เก็บรายการบิลที่เปิดค้างไว้
-let checkingBillIndex = null; // บิลที่กำลังจะชำระเงิน
+let activeBills = []; 
+let checkingBillIndex = null; 
 
 window.onload = async function() {
     await loadProductsFromSupabase();
@@ -24,16 +24,17 @@ window.onload = async function() {
     }
 };
 
-// --- LOAD PRODUCTS FROM SUPABASE ---
+// --- LOAD PRODUCTS FROM coffee_products TABLE ---
 async function loadProductsFromSupabase() {
     try {
-        const { data, error } = await supabaseClient.from('products').select('*').order('id', { ascending: true });
+        const { data, error } = await supabaseClient.from('coffee_products').select('*').order('id', { ascending: true });
         if (error) throw error;
+        
         if (data && data.length > 0) {
             PRODUCTS = data.map(p => ({
                 id: p.id,
-                name: p.name,
-                category: p.category,
+                name: p.name || 'ไม่มีชื่อเมนู',
+                category: p.category || 'hot-coffee',
                 icon: p.icon || '☕',
                 imageUrl: p.image_url || '',
                 cogs: Number(p.cogs) || 0,
@@ -43,14 +44,12 @@ async function loadProductsFromSupabase() {
                 cupType: p.cup_type || 'แก้วร้อน',
                 lidType: p.lid_type || 'ฝาร้อน'
             }));
+        } else {
+            PRODUCTS = [];
         }
     } catch (err) {
-        console.error('Error loading products:', err);
-        // Fallback ค่าเริ่มต้นหากดึงไม่ได้
-        PRODUCTS = [
-            { id: 1, name: 'อเมริกาโน่ร้อน', category: 'hot-coffee', icon: '☕', imageUrl: '', cogs: 16.82, priceSoldier: 25, priceTourist: 35, beanGram: 18, cupType: 'แก้วร้อน', lidType: 'ฝาร้อน' },
-            { id: 2, name: 'อเมริกาโน่เย็น', category: 'iced-coffee', icon: '🧊', imageUrl: '', cogs: 17.50, priceSoldier: 30, priceTourist: 45, beanGram: 20, cupType: 'แก้วเย็น', lidType: 'ฝาเย็น' }
-        ];
+        console.error('Error loading coffee products:', err);
+        PRODUCTS = [];
     }
 }
 
@@ -87,6 +86,11 @@ function renderProducts() {
     const searchInput = document.getElementById('search-product');
     if (!container) return;
 
+    if (PRODUCTS.length === 0) {
+        container.innerHTML = `<div class="col-span-full py-8 text-center text-zinc-500 text-xs">ยังไม่มีเมนูในระบบ กดปุ่ม "จัดการเมนู" ด้านบนเพื่อเพิ่มเมนูใหม่ได้เลย</div>`;
+        return;
+    }
+
     const keyword = searchInput ? searchInput.value.toLowerCase() : '';
     const items = PRODUCTS.filter(p => {
         const matchCat = (currentCategory === 'all' || p.category === currentCategory);
@@ -105,10 +109,10 @@ function renderProducts() {
             <div onclick="addToCart(${p.id})" class="bg-darkbg border border-bordercol rounded-xl p-3 flex flex-col justify-between hover:border-zinc-500 transition cursor-pointer select-none shadow-sm active:scale-95">
                 <div class="bg-cardbg border border-bordercol rounded-lg h-16 flex items-center justify-center overflow-hidden mb-2 relative">
                     ${imageContent}
-                    <span class="absolute top-1 right-1 text-[9px] font-bold bg-zinc-900/90 text-zinc-300 px-1.5 py-0.5 rounded-full font-mono border border-bordercol">ทุน ฿${p.cogs}</span>
+                    <span class="absolute top-1 right-1 text-[9px] font-bold bg-zinc-900/90 text-zinc-300 px-1.5 py-0.5 rounded-full font-mono border border-bordercol">ทุน ฿${p.cogs.toFixed(2)}</span>
                 </div>
                 <div>
-                    <h4 class="font-extrabold text-xs text-zinc-100">${p.name}</h4>
+                    <h4 class="font-extrabold text-xs text-zinc-100 truncate">${p.name}</h4>
                     <div class="flex items-center justify-between mt-1.5 pt-1 border-t border-bordercol">
                         <span class="text-zinc-100 font-black text-sm font-mono">฿${price}</span>
                         <span class="text-[9px] font-bold text-emerald-400 bg-emerald-950/40 border border-emerald-500/20 px-1.5 py-0.5 rounded">+฿${profit.toFixed(1)}</span>
@@ -121,6 +125,8 @@ function renderProducts() {
 
 function addToCart(productId) {
     const product = PRODUCTS.find(p => p.id === productId);
+    if (!product) return;
+    
     const price = customerType === 'soldier' ? product.priceSoldier : product.priceTourist;
     const typeLabel = customerType === 'soldier' ? 'กำลังพล' : 'ราคาปกติ';
 
@@ -210,7 +216,7 @@ function updateCartUI() {
     if (btnCheckoutDirect) btnCheckoutDirect.disabled = false;
 }
 
-// --- ACTIVE BILLS & QUEUE MANAGEMENT ---
+// --- ACTIVE BILLS & QUEUE ---
 function saveAsBill() {
     if (cart.length === 0) return;
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -268,7 +274,7 @@ function cancelBill(index) {
 
 function openCheckoutModalDirect() {
     if (cart.length === 0) return;
-    checkingBillIndex = null; // หมายถึงชำระจากตะกร้าโดยตรง
+    checkingBillIndex = null;
     const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
     showModalWithTotal(subtotal);
 }
@@ -299,7 +305,6 @@ function calculateChange() {
     document.getElementById('cash-change').innerText = `฿${Math.max(0, change).toFixed(2)}`;
 }
 
-// --- SUPABASE ACTIONS & SAVE ---
 async function confirmPayment() {
     const btnConfirm = document.getElementById('btn-confirm-pay');
     const orderNote = document.getElementById('order-note').value.trim();
@@ -337,7 +342,6 @@ async function confirmPayment() {
             await deductInventory('หลอด', item.qty);
         }
 
-        // จัดการเคลียร์บิลหรือตะกร้า
         if (checkingBillIndex !== null) {
             activeBills.splice(checkingBillIndex, 1);
             updateActiveBillsUI();
@@ -372,7 +376,127 @@ async function deductInventory(itemName, amount) {
     }
 }
 
-// --- DASHBOARD & COST FUNCTIONS (สืบทอดความสมบูรณ์เดิม) ---
+// --- MENU MANAGER FUNCTIONS ---
+function openMenuManagerModal() {
+    document.getElementById('modal-menu-manager').classList.remove('hidden');
+    renderMenuManagerTable();
+    resetMenuForm();
+}
+
+function closeMenuManagerModal() {
+    document.getElementById('modal-menu-manager').classList.add('hidden');
+    renderProducts(); // Refresh POS grid
+}
+
+function resetMenuForm() {
+    document.getElementById('edit-product-id').value = '';
+    document.getElementById('p-name').value = '';
+    document.getElementById('p-category').value = 'hot-coffee';
+    document.getElementById('p-soldier').value = '';
+    document.getElementById('p-tourist').value = '';
+    document.getElementById('p-cogs').value = '';
+    document.getElementById('p-image').value = '';
+    document.getElementById('form-title').innerText = '+ เพิ่มเมนูใหม่';
+}
+
+function renderMenuManagerTable() {
+    const tbody = document.getElementById('manage-products-tbody');
+    if (!tbody) return;
+
+    if (PRODUCTS.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-zinc-500">ยังไม่มีเมนูในระบบ</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = PRODUCTS.map(p => `
+        <tr class="border-b border-bordercol hover:bg-zinc-800/50">
+            <td class="p-2.5 font-bold text-zinc-100 flex items-center gap-2">
+                <span class="w-7 h-7 bg-cardbg border border-bordercol rounded flex items-center justify-center overflow-hidden shrink-0">
+                    ${p.imageUrl ? `<img src="${p.imageUrl}" class="w-full h-full object-cover">` : p.icon}
+                </span>
+                <span class="truncate">${p.name}</span>
+            </td>
+            <td class="p-2.5 font-mono">฿${p.priceSoldier}</td>
+            <td class="p-2.5 font-mono">฿${p.priceTourist}</td>
+            <td class="p-2.5 font-mono text-zinc-400">฿${p.cogs.toFixed(2)}</td>
+            <td class="p-2.5 text-right space-x-1">
+                <button onclick="editProduct(${p.id})" class="px-2 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded font-bold text-[10px] border border-bordercol">แก้ไข</button>
+                <button onclick="deleteProduct(${p.id})" class="px-2 py-1 bg-red-950/40 hover:bg-red-600 text-red-400 hover:text-white rounded font-bold text-[10px] border border-red-500/30">ลบ</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+async function saveProduct(event) {
+    event.preventDefault();
+    const id = document.getElementById('edit-product-id').value;
+    const name = document.getElementById('p-name').value.trim();
+    const category = document.getElementById('p-category').value;
+    const priceSoldier = parseFloat(document.getElementById('p-soldier').value) || 0;
+    const priceTourist = parseFloat(document.getElementById('p-tourist').value) || 0;
+    const cogs = parseFloat(document.getElementById('p-cogs').value) || 0;
+    const imageUrl = document.getElementById('p-image').value.trim();
+
+    const payload = {
+        name,
+        category,
+        price_soldier: priceSoldier,
+        price_tourist: priceTourist,
+        cogs,
+        image_url: imageUrl,
+        icon: category === 'hot-coffee' ? '☕' : '🧊'
+    };
+
+    try {
+        if (id) {
+            // Update
+            const { error } = await supabaseClient.from('coffee_products').update(payload).eq('id', id);
+            if (error) throw error;
+            alert('แก้ไขเมนูสำเร็จ!');
+        } else {
+            // Insert
+            const { error } = await supabaseClient.from('coffee_products').insert([payload]);
+            if (error) throw error;
+            alert('เพิ่มเมนูใหม่สำเร็จ!');
+        }
+        resetMenuForm();
+        await loadProductsFromSupabase();
+        renderMenuManagerTable();
+    } catch (err) {
+        console.error(err);
+        alert('เกิดข้อผิดพลาด: ' + err.message);
+    }
+}
+
+function editProduct(id) {
+    const p = PRODUCTS.find(item => item.id === id);
+    if (!p) return;
+
+    document.getElementById('edit-product-id').value = p.id;
+    document.getElementById('p-name').value = p.name;
+    document.getElementById('p-category').value = p.category;
+    document.getElementById('p-soldier').value = p.priceSoldier;
+    document.getElementById('p-tourist').value = p.priceTourist;
+    document.getElementById('p-cogs').value = p.cogs;
+    document.getElementById('p-image').value = p.imageUrl;
+    document.getElementById('form-title').innerText = `✏️ แก้ไขเมนู: ${p.name}`;
+}
+
+async function deleteProduct(id) {
+    if (!confirm('ต้องการลบเมนูนี้ออกจากระบบใช่หรือไม่?')) return;
+
+    try {
+        const { error } = await supabaseClient.from('coffee_products').delete().eq('id', id);
+        if (error) throw error;
+        await loadProductsFromSupabase();
+        renderMenuManagerTable();
+    } catch (err) {
+        console.error(err);
+        alert('ลบไม่สำเร็จ: ' + err.message);
+    }
+}
+
+// --- DASHBOARD & COST FUNCTIONS ---
 async function loadSalesHistory() {
     const tbody = document.getElementById('sales-history-body');
     const filterDate = document.getElementById('filter-date') ? document.getElementById('filter-date').value : '';
