@@ -47,11 +47,16 @@
                 </div>
             </div>
 
-            <!-- Navigation Links -->
-            <div class="flex items-center gap-1 bg-darkbg p-1 rounded-xl border border-bordercol text-xs">
-                <a href="index.html" class="px-2.5 py-1.5 rounded-lg font-bold bg-zinc-800 text-white transition shadow">POS</a>
-                <a href="dashboard.html" class="px-2.5 py-1.5 rounded-lg font-bold text-zinc-400 hover:text-white transition">สรุป</a>
-                <a href="cost.html" class="px-2.5 py-1.5 rounded-lg font-bold text-zinc-400 hover:text-white transition">ต้นทุน</a>
+            <!-- Navigation Links & Manage Menu Button -->
+            <div class="flex items-center gap-2">
+                <button onclick="openMenuManagerModal()" class="px-3 py-1.5 rounded-xl font-bold bg-amber-600/20 text-amber-400 border border-amber-500/30 text-xs hover:bg-amber-600/30 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-utensils"></i> จัดการเมนู
+                </button>
+                <div class="flex items-center gap-1 bg-darkbg p-1 rounded-xl border border-bordercol text-xs">
+                    <a href="index.html" class="px-2.5 py-1.5 rounded-lg font-bold bg-zinc-800 text-white transition shadow">POS</a>
+                    <a href="dashboard.html" class="px-2.5 py-1.5 rounded-lg font-bold text-zinc-400 hover:text-white transition">สรุป</a>
+                    <a href="cost.html" class="px-2.5 py-1.5 rounded-lg font-bold text-zinc-400 hover:text-white transition">ต้นทุน</a>
+                </div>
             </div>
         </div>
     </header>
@@ -186,6 +191,82 @@
         </div>
     </div>
 
-    <script src="script.js?v=8"></script>
+    <!-- MENU MANAGER MODAL -->
+    <div id="modal-menu-manager" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 hidden backdrop-blur-sm">
+        <div class="bg-cardbg border border-bordercol rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+            <div class="flex justify-between items-center border-b border-bordercol p-4 bg-darkbg">
+                <h3 class="font-bold text-sm sm:text-base text-zinc-100 flex items-center gap-2">
+                    <i class="fa-solid fa-utensils text-amber-400"></i> จัดการเมนูสินค้า (เพิ่ม / แก้ไข / ลบ)
+                </h3>
+                <button onclick="closeMenuManagerModal()" class="text-zinc-400 text-lg font-bold hover:text-white">&times;</button>
+            </div>
+
+            <div class="p-4 overflow-y-auto space-y-4 flex-1">
+                <!-- Add / Edit Form -->
+                <form id="menu-form" onsubmit="saveProduct(event)" class="bg-darkbg border border-bordercol p-3 rounded-2xl space-y-3">
+                    <input type="hidden" id="edit-product-id">
+                    <h4 id="form-title" class="font-bold text-xs text-amber-400">+ เพิ่มเมนูใหม่</h4>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                        <div>
+                            <label class="block text-zinc-400 font-bold mb-1">ชื่อเมนู</label>
+                            <input type="text" id="p-name" required placeholder="เช่น ลาเต้ร้อน" class="w-full p-2 bg-cardbg border border-bordercol rounded-xl text-zinc-100">
+                        </div>
+                        <div>
+                            <label class="block text-zinc-400 font-bold mb-1">หมวดหมู่</label>
+                            <select id="p-category" class="w-full p-2 bg-cardbg border border-bordercol rounded-xl text-zinc-100">
+                                <option value="hot-coffee">เครื่องดื่มร้อน (hot-coffee)</option>
+                                <option value="iced-coffee">เครื่องดื่มเย็น (iced-coffee)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-zinc-400 font-bold mb-1">ราคากำลังพล (บาท)</label>
+                            <input type="number" id="p-soldier" required placeholder="25" class="w-full p-2 bg-cardbg border border-bordercol rounded-xl text-zinc-100 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-zinc-400 font-bold mb-1">ราคานักท่องเที่ยว/ปกติ (บาท)</label>
+                            <input type="number" id="p-tourist" required placeholder="35" class="w-full p-2 bg-cardbg border border-bordercol rounded-xl text-zinc-100 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-zinc-400 font-bold mb-1">ต้นทุนต่อแก้ว (COGS)</label>
+                            <input type="number" step="0.01" id="p-cogs" required placeholder="15.00" class="w-full p-2 bg-cardbg border border-bordercol rounded-xl text-zinc-100 font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-zinc-400 font-bold mb-1">ลิงก์รูปภาพ (Image URL)</label>
+                            <input type="text" id="p-image" placeholder="https://..." class="w-full p-2 bg-cardbg border border-bordercol rounded-xl text-zinc-100">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-2">
+                        <button type="button" onclick="resetMenuForm()" class="px-3 py-1.5 bg-zinc-800 text-zinc-300 rounded-xl text-xs font-bold border border-bordercol">ล้างค่า</button>
+                        <button type="submit" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow">บันทึกเมนู</button>
+                    </div>
+                </form>
+
+                <!-- Existing Products List Table -->
+                <div>
+                    <h4 class="font-bold text-xs text-zinc-300 mb-2">รายการเมนูทั้งหมดในระบบ</h4>
+                    <div class="overflow-x-auto border border-bordercol rounded-xl bg-darkbg">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-cardbg text-zinc-400 border-b border-bordercol">
+                                <tr>
+                                    <th class="p-2.5">เมนู</th>
+                                    <th class="p-2.5">กำลังพล</th>
+                                    <th class="p-2.5">ปกติ</th>
+                                    <th class="p-2.5">ต้นทุน</th>
+                                    <th class="p-2.5 text-right">จัดการ</th>
+                                </tr>
+                            </thead>
+                            <tbody id="manage-products-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js?v=9"></script>
 </body>
 </html>
